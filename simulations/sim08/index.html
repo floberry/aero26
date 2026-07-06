@@ -1,589 +1,691 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>에너지 효율 레이스</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: 'Malgun Gothic', sans-serif;
-            padding: 20px;
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            text-align: center;
-            color: #4da6ff;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-        
-        .start-screen {
-            text-align: center;
-            padding: 40px 20px;
-        }
-        
-        .car-image {
-            width: 280px;
-            height: 200px;
-            margin: 40px auto;
-            background: linear-gradient(135deg, #4da6ff 0%, #0066cc 100%);
-            border-radius: 25px;
-            position: relative;
-            box-shadow: 0 15px 40px rgba(77, 166, 255, 0.4);
-        }
-        
-        .car-body {
-            position: absolute;
-            width: 200px;
-            height: 80px;
-            background: #4da6ff;
-            top: 55px;
-            left: 40px;
-            border-radius: 15px;
-        }
-        
-        .car-top {
-            position: absolute;
-            width: 120px;
-            height: 55px;
-            background: #0066cc;
-            top: 40px;
-            left: 80px;
-            border-radius: 15px 15px 0 0;
-        }
-        
-        .wheel {
-            position: absolute;
-            width: 42px;
-            height: 42px;
-            background: #fff;
-            border-radius: 50%;
-            bottom: 45px;
-        }
-        
-        .wheel-left {
-            left: 55px;
-        }
-        
-        .wheel-right {
-            right: 55px;
-        }
-        
-        .btn {
-            background: #4da6ff;
-            color: #fff;
-            border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            margin: 10px;
-            transition: all 0.3s;
-        }
-        
-        .btn:hover {
-            background: #0066cc;
-            transform: scale(1.05);
-        }
-        
-        .problem-screen {
-            display: none;
-        }
-        
-        .energy-diagram {
-            background: #1a1a1a;
-            border: 2px solid #4da6ff;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        
-        .car-type {
-            display: inline-block;
-            width: 100%;
-            margin: 15px 0;
-            padding: 15px;
-            background: #0d0d0d;
-            border-radius: 10px;
-            border-left: 4px solid #4da6ff;
-        }
-        
-        .car-type h3 {
-            color: #4da6ff;
-            margin-bottom: 10px;
-            font-size: 18px;
-        }
-        
-        .energy-info {
-            color: #fff;
-            line-height: 1.8;
-            font-size: 15px;
-        }
-        
-        .options {
-            margin: 20px 0;
-        }
-        
-        .option-label {
-            color: #fff;
-            font-size: 16px;
-            margin: 15px 0;
-            padding: 15px;
-            background: #1a1a1a;
-            border: 2px solid #333;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            user-select: none;
-        }
-        
-        .option-label:hover {
-            border-color: #4da6ff;
-            background: #0d0d0d;
-        }
-        
-        .option-label.selected {
-            border-color: #4da6ff;
-            background: #0d0d0d;
-        }
-        
-        .selected-order {
-            color: #4da6ff;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        
-        .race-container {
-            display: none;
-            margin: 30px 0;
-            text-align: center;
-        }
-        
-        .road {
-            width: 100%;
-            height: 120px;
-            background: #333;
-            position: relative;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .road-line {
-            position: absolute;
-            width: 100%;
-            height: 4px;
-            background: repeating-linear-gradient(
-                90deg,
-                #fff 0px,
-                #fff 30px,
-                transparent 30px,
-                transparent 60px
-            );
-            top: 58px;
-        }
-        
-        .racing-car {
-            position: absolute;
-            width: 80px;
-            height: 40px;
-            left: 10px;
-            top: 40px;
-            transition: left 2s ease-out;
-        }
-        
-        .racing-car-body {
-            width: 60px;
-            height: 25px;
-            background: #4da6ff;
-            border-radius: 5px;
-            position: absolute;
-            left: 10px;
-            top: 8px;
-        }
-        
-        .racing-car-top {
-            width: 35px;
-            height: 18px;
-            background: #0066cc;
-            border-radius: 5px 5px 0 0;
-            position: absolute;
-            left: 23px;
-            top: 0;
-        }
-        
-        .racing-wheel {
-            width: 12px;
-            height: 12px;
-            background: #fff;
-            border-radius: 50%;
-            position: absolute;
-            bottom: 0;
-        }
-        
-        .racing-wheel-left {
-            left: 15px;
-        }
-        
-        .racing-wheel-right {
-            right: 15px;
-        }
-        
-        .racing-wheel.broken {
-            animation: fall 0.5s ease-out forwards;
-        }
-        
-        @keyframes fall {
-            to {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-        }
-        
-        .result-message {
-            margin: 20px 0;
-            padding: 20px;
-            border-radius: 10px;
-            font-size: 20px;
-            font-weight: bold;
-        }
-        
-        .result-message.correct {
-            background: #0d4d0d;
-            color: #4da6ff;
-            border: 2px solid #4da6ff;
-        }
-        
-        .result-message.incorrect {
-            background: #4d0d0d;
-            color: #ff4d4d;
-            border: 2px solid #ff4d4d;
-        }
-        
-        .explanation {
-            display: none;
-            margin: 20px 0;
-            padding: 20px;
-            background: #1a1a1a;
-            border: 2px solid #4da6ff;
-            border-radius: 10px;
-            color: #fff;
-            line-height: 1.8;
-        }
-        
-        .explanation h3 {
-            color: #4da6ff;
-            margin-bottom: 15px;
-        }
-        
-        .explanation p {
-            margin: 15px 0;
-            text-align: left;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>⚡ 피카츄 회로 챌린지 ⚡</title>
+<style>
+  /* ===================== 기본 리셋 & 폰트 ===================== */
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    background: linear-gradient(180deg, #FFF6C9 0%, #FFE066 40%, #FFD23F 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    color: #2b2b2b;
+    overflow-x: hidden;
+  }
+  #app {
+    width: 100%;
+    max-width: 430px;
+    min-height: 100vh;
+    padding: 14px 14px 40px;
+    position: relative;
+  }
+
+  /* ===================== 흔들림(오답) 효과 ===================== */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%,30%,50%,70%,90% { transform: translateX(-10px); }
+    20%,40%,60%,80% { transform: translateX(10px); }
+  }
+  .shake { animation: shake 0.5s; }
+
+  /* ===================== 상단 헤더 ===================== */
+  header { text-align: center; margin-bottom: 10px; }
+  header h1 {
+    font-size: 22px;
+    margin: 6px 0 2px;
+    color: #C0392B;
+    text-shadow: 1px 1px 0 #fff, 2px 2px 0 #FFD23F;
+  }
+  header p.story {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #5a4300;
+    background: rgba(255,255,255,0.65);
+    border-radius: 12px;
+    padding: 8px 10px;
+    margin: 6px 0 0;
+  }
+
+  /* ===================== 진행 게이지 ===================== */
+  .gauge-wrap {
+    background: #fff;
+    border: 3px solid #3B4CCA;
+    border-radius: 20px;
+    padding: 6px 8px;
+    margin: 12px 0;
+    box-shadow: 0 3px 0 #2a37a0;
+  }
+  .gauge-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #3B4CCA;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .gauge-bar-bg {
+    background: #e8e8e8;
+    border-radius: 14px;
+    height: 18px;
+    overflow: hidden;
+    position: relative;
+  }
+  .gauge-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #FFCB05, #FF8C00);
+    border-radius: 14px;
+    transition: width 0.5s ease;
+  }
+
+  /* ===================== 카드 공통 ===================== */
+  .card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    border: 2px solid #ffffff;
+  }
+  .card h2 {
+    font-size: 15px;
+    margin: 0 0 8px;
+    color: #C0392B;
+  }
+  .given-values {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin: 10px 0;
+    gap: 6px;
+  }
+  .value-chip {
+    background: #FFF6C9;
+    border: 2px solid #FFCB05;
+    border-radius: 12px;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+    min-width: 70px;
+  }
+  .value-chip span.big { font-size: 16px; color: #C0392B; display:block; }
+
+  /* ===================== 회로도 SVG ===================== */
+  .circuit-box {
+    background: #F2F8FF;
+    border-radius: 14px;
+    padding: 8px;
+    border: 2px dashed #3B4CCA;
+  }
+  svg text { font-family: 'Segoe UI', sans-serif; }
+
+  /* ===================== 입력 & 버튼 ===================== */
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .input-row input {
+    flex: 1;
+    font-size: 20px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 3px solid #3B4CCA;
+    text-align: center;
+    font-weight: bold;
+  }
+  .input-row span.unit { font-size: 16px; font-weight: bold; color:#3B4CCA; }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  button {
+    flex: 1;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 14px 8px;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    color: #fff;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+    transition: transform 0.1s;
+  }
+  button:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.2); }
+  .btn-check { background: #E3350D; }
+  .btn-new   { background: #3B4CCA; }
+  .btn-hint  { background: #27AE60; margin-top: 10px; width: 100%; flex: none; }
+
+  /* ===================== 힌트 영역 ===================== */
+  .hint-area {
+    margin-top: 10px;
+    border-radius: 14px;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.6;
+    background: #EAFBF0;
+    border: 2px dashed #27AE60;
+    display: none;
+  }
+  .hint-area.show { display: block; }
+  .hint-area p { margin: 4px 0; }
+  .hint-title { font-weight: bold; color: #1E8449; margin-bottom: 4px; }
+
+  /* ===================== 결과 영역 ===================== */
+  .result-area {
+    margin-top: 12px;
+    border-radius: 14px;
+    padding: 10px 12px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    display: none;
+  }
+  .result-area.show { display: block; }
+  .result-area.correct { background: #E9FBEA; border: 2px solid #2ECC71; }
+  .result-area.wrong { background: #FDEDEC; border: 2px solid #E74C3C; }
+  .result-title { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
+  .result-title.correct-title { color: #27AE60; }
+  .result-title.wrong-title { color: #C0392B; }
+
+  /* ===================== 오답 붉은 플래시 ===================== */
+  #flashOverlay {
+    position: fixed; inset: 0;
+    background: rgba(231, 76, 60, 0.35);
+    pointer-events: none;
+    opacity: 0;
+    z-index: 40;
+  }
+  @keyframes flashFade {
+    0% { opacity: 0.75; }
+    100% { opacity: 0; }
+  }
+  #flashOverlay.active { animation: flashFade 0.6s ease-out; }
+
+  /* ===================== 승리 오버레이 ===================== */
+  #victoryOverlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 20px;
+  }
+  #victoryOverlay.show { display: flex; }
+  .victory-card {
+    background: linear-gradient(160deg, #FFF6C9, #FFCB05);
+    border-radius: 24px;
+    padding: 26px 20px;
+    text-align: center;
+    max-width: 360px;
+    box-shadow: 0 0 40px rgba(255,203,5,0.9);
+    animation: popIn 0.5s ease;
+  }
+  @keyframes popIn {
+    0% { transform: scale(0.4); opacity: 0; }
+    70% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  .pika-face { animation: bounce 0.8s infinite; display: flex; justify-content: center; }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-14px); }
+  }
+  .victory-card h2 { color: #C0392B; font-size: 20px; margin: 10px 0 6px; }
+  .victory-card p { font-size: 14px; color: #5a4300; line-height: 1.6; }
+  .victory-card button { margin-top: 14px; background: #E3350D; }
+
+  /* 색종이 효과 */
+  .confetti {
+    position: fixed;
+    top: -20px;
+    width: 8px; height: 14px;
+    opacity: 0.9;
+    z-index: 49;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(360deg); opacity: 0.3; }
+  }
+
+  .sad-pika { display: flex; justify-content: center; margin: 6px 0; }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>⚡ 에너지 효율 레이스 ⚡</h1>
-        
-        <div class="start-screen" id="startScreen">
-            <div class="car-image">
-                <div class="car-body"></div>
-                <div class="car-top"></div>
-                <div class="wheel wheel-left"></div>
-                <div class="wheel wheel-right"></div>
-            </div>
-            <button class="btn" onclick="startRace()">🏁 레이스를 출발할까요?</button>
-        </div>
-        
-        <div class="problem-screen" id="problemScreen">
-            <div class="energy-diagram">
-                <div class="car-type">
-                    <h3>🚗 A: 일반 자동차 (화석 연료)</h3>
-                    <div class="energy-info" id="carAInfo"></div>
-                </div>
-                
-                <div class="car-type">
-                    <h3>⚡ B: 전기 자동차</h3>
-                    <div class="energy-info" id="carBInfo"></div>
-                </div>
-            </div>
-            
-            <div class="options">
-                <p style="color: #4da6ff; font-size: 18px; margin-bottom: 15px;">
-                    다음 중 옳은 것을 순서대로 선택하세요:
-                </p>
-                <div class="option-label" onclick="selectOption('ㄱ')">
-                    <span id="optionA"></span>
-                    <span class="selected-order" id="orderA"></span>
-                </div>
-                <div class="option-label" onclick="selectOption('ㄴ')">
-                    <span id="optionB"></span>
-                    <span class="selected-order" id="orderB"></span>
-                </div>
-                <div class="option-label" onclick="selectOption('ㄷ')">
-                    <span id="optionC"></span>
-                    <span class="selected-order" id="orderC"></span>
-                </div>
-            </div>
-            
-            <div style="text-align: center;">
-                <button class="btn" onclick="submitAnswer()">제출하기</button>
-                <button class="btn" onclick="newProblem()">새 문제</button>
-            </div>
-            
-            <div class="race-container" id="raceContainer">
-                <div class="road">
-                    <div class="road-line"></div>
-                    <div class="racing-car" id="racingCar">
-                        <div class="racing-car-body"></div>
-                        <div class="racing-car-top"></div>
-                        <div class="racing-wheel racing-wheel-left" id="wheelLeft"></div>
-                        <div class="racing-wheel racing-wheel-right" id="wheelRight"></div>
-                    </div>
-                </div>
-                <div class="result-message" id="resultMessage"></div>
-            </div>
-            
-            <div class="explanation" id="explanation"></div>
-        </div>
+
+<div id="flashOverlay"></div>
+
+<div id="app">
+
+  <!-- ===================== 헤더 & 스토리 ===================== -->
+  <header>
+    <h1>⚡ 피카츄 회로 챌린지 ⚡</h1>
+    <p class="story">
+      포켓몬 월드챔피언십 결승전! 승민쌤은 피카츄를 내보내고 싶지만
+      전기 회로 계산이 막혀 발이 묶였다 😱 금산여고 물리Ⅱ 학생들이여,
+      문제를 풀어 피카츄를 도와 우승으로 이끌어라!
+    </p>
+  </header>
+
+  <!-- ===================== 진행 게이지 ===================== -->
+  <div class="gauge-wrap">
+    <div class="gauge-label">
+      <span>🏆 챔피언십 진행도</span>
+      <span id="gaugeText">0 / 5</span>
     </div>
-    
-    <script>
-        let currentProblem = {};
-        let selectedOptions = [];
-        let correctAnswer = [];
-        
-        function startRace() {
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('problemScreen').style.display = 'block';
-            newProblem();
-        }
-        
-        function generateProblem() {
-            // 효율이 10, 20, 30, 40, 50, 60, 70, 80, 90% 중 하나가 되도록 설정
-            
-            // A: 일반 자동차 - 효율 20~40%
-            const efficiencyAPercent = (Math.floor(Math.random() * 3) + 2) * 10; // 20, 30, 40
-            const chemicalEnergyA = (Math.floor(Math.random() * 6) + 5) * 10; // 50-100
-            const usefulEnergyA = chemicalEnergyA * efficiencyAPercent / 100;
-            const heatLossA = chemicalEnergyA - usefulEnergyA;
-            
-            // B: 전기 자동차 - 효율 60~90%
-            const efficiencyBPercent = (Math.floor(Math.random() * 4) + 6) * 10; // 60, 70, 80, 90
-            const electricEnergyB = (Math.floor(Math.random() * 6) + 5) * 10; // 50-100
-            const usefulEnergyB = electricEnergyB * efficiencyBPercent / 100;
-            const heatLossB = electricEnergyB - usefulEnergyB;
-            
-            // 정답 판별
-            const answers = [];
-            
-            // ㄱ. 에너지 효율 비교 (A가 B보다 높은 경우만 정답)
-            if (efficiencyAPercent > efficiencyBPercent) {
-                answers.push('ㄱ');
-            }
-            
-            // ㄴ. A의 열손실 비율이 50%보다 높은 경우 정답
-            const heatRatioA = (heatLossA / chemicalEnergyA) * 100;
-            if (heatRatioA > 50) {
-                answers.push('ㄴ');
-            }
-            
-            // ㄷ. B의 회생제동 - 항상 참
-            answers.push('ㄷ');
-            
-            return {
-                carA: {
-                    chemicalEnergy: chemicalEnergyA,
-                    heatLoss: heatLossA,
-                    usefulEnergy: usefulEnergyA,
-                    efficiency: efficiencyAPercent
-                },
-                carB: {
-                    electricEnergy: electricEnergyB,
-                    heatLoss: heatLossB,
-                    usefulEnergy: usefulEnergyB,
-                    efficiency: efficiencyBPercent
-                },
-                correctAnswer: answers
-            };
-        }
-        
-        function newProblem() {
-            currentProblem = generateProblem();
-            correctAnswer = currentProblem.correctAnswer;
-            selectedOptions = [];
-            
-            // 화면 초기화
-            document.getElementById('raceContainer').style.display = 'none';
-            document.getElementById('explanation').style.display = 'none';
-            document.getElementById('racingCar').style.left = '10px';
-            document.getElementById('wheelLeft').classList.remove('broken');
-            document.getElementById('wheelRight').classList.remove('broken');
-            
-            // 선택 초기화
-            document.querySelectorAll('.option-label').forEach(label => {
-                label.classList.remove('selected');
-            });
-            document.getElementById('orderA').textContent = '';
-            document.getElementById('orderB').textContent = '';
-            document.getElementById('orderC').textContent = '';
-            
-            // 문제 표시
-            const carA = currentProblem.carA;
-            const carB = currentProblem.carB;
-            
-            document.getElementById('carAInfo').innerHTML = `
-                • 연료의 화학 에너지: ${carA.chemicalEnergy} kJ<br>
-                • 손실된 열에너지: ${carA.heatLoss} kJ
-            `;
-            
-            document.getElementById('carBInfo').innerHTML = `
-                • 공급받은 전기 에너지: ${carB.electricEnergy} kJ<br>
-                • 손실된 열에너지: ${carB.heatLoss} kJ
-            `;
-            
-            document.getElementById('optionA').textContent = 
-                'ㄱ. 공급한 에너지에 대해 원하는 용도로 사용한 에너지의 비율은 A가 B보다 높다.';
-            document.getElementById('optionB').textContent = 
-                'ㄴ. A에서는 연료의 연소 과정에서 발생하는 열에너지의 비율이 높기 때문에 에너지 효율이 낮다.';
-            document.getElementById('optionC').textContent = 
-                'ㄷ. B에서는 감속할 때 줄어드는 운동 에너지의 일부를 전기 에너지로 전환하여 재사용한다.';
-        }
-        
-        function selectOption(option) {
-            const index = selectedOptions.indexOf(option);
-            
-            if (index > -1) {
-                // 이미 선택된 경우 선택 취소
-                selectedOptions.splice(index, 1);
-            } else {
-                // 새로 선택
-                selectedOptions.push(option);
-            }
-            
-            // UI 업데이트
-            updateSelectionUI();
-        }
-        
-        function updateSelectionUI() {
-            // 모든 선택 초기화
-            document.querySelectorAll('.option-label').forEach(label => {
-                label.classList.remove('selected');
-            });
-            document.getElementById('orderA').textContent = '';
-            document.getElementById('orderB').textContent = '';
-            document.getElementById('orderC').textContent = '';
-            
-            // 선택된 항목 표시
-            selectedOptions.forEach((option, index) => {
-                const orderId = 'order' + (option === 'ㄱ' ? 'A' : option === 'ㄴ' ? 'B' : 'C');
-                document.getElementById(orderId).textContent = `[${index + 1}번째 선택]`;
-                
-                const labels = document.querySelectorAll('.option-label');
-                if (option === 'ㄱ') labels[0].classList.add('selected');
-                if (option === 'ㄴ') labels[1].classList.add('selected');
-                if (option === 'ㄷ') labels[2].classList.add('selected');
-            });
-        }
-        
-        function submitAnswer() {
-            if (selectedOptions.length === 0) {
-                alert('답을 선택해주세요!');
-                return;
-            }
-            
-            // 정답 확인
-            const isCorrect = JSON.stringify(selectedOptions.sort()) === JSON.stringify(correctAnswer.sort());
-            
-            // 레이스 시작
-            document.getElementById('raceContainer').style.display = 'block';
-            
-            if (isCorrect) {
-                // 정답: 자동차가 끝까지 이동
-                document.getElementById('racingCar').style.left = 'calc(100% + 80px)';
-                document.getElementById('resultMessage').className = 'result-message correct';
-                document.getElementById('resultMessage').textContent = '🏆 당신은 최고의 드라이버입니다!';
-            } else {
-                // 오답: 자동차가 조금 이동 후 바퀴 빠짐
-                setTimeout(() => {
-                    document.getElementById('racingCar').style.left = '150px';
-                }, 100);
-                
-                setTimeout(() => {
-                    document.getElementById('wheelLeft').classList.add('broken');
-                    document.getElementById('wheelRight').classList.add('broken');
-                }, 2100);
-                
-                document.getElementById('resultMessage').className = 'result-message incorrect';
-                document.getElementById('resultMessage').textContent = '💥 완주에 실패했어요. 조금 더 노력해볼까요?';
-            }
-            
-            // 해설 표시
-            setTimeout(() => {
-                showExplanation(isCorrect);
-            }, 2500);
-        }
-        
-        function showExplanation(isCorrect) {
-            const carA = currentProblem.carA;
-            const carB = currentProblem.carB;
-            
-            const efficiencyA = carA.efficiency;
-            const efficiencyB = carB.efficiency;
-            const heatRatioA = ((carA.heatLoss / carA.chemicalEnergy) * 100).toFixed(0);
-            
-            let explanation = '<h3>📖 해설</h3>';
-            
-            // ㄱ 해설
-            explanation += `<p><strong>ㄱ.</strong> 에너지 효율은 공급한 에너지에 대해 유용하게 사용한 에너지의 비율을 의미하며, 이는 우리가 원하는 용도로 실제 사용된 에너지가 얼마나 되는지를 나타내는 중요한 지표입니다. `;
-            explanation += `A의 유용한 에너지는 ${carA.chemicalEnergy} kJ - ${carA.heatLoss} kJ = ${carA.usefulEnergy} kJ이므로 에너지 효율은 (${carA.usefulEnergy} kJ / ${carA.chemicalEnergy} kJ) × 100 = ${efficiencyA}%입니다. `;
-            explanation += `B의 유용한 에너지는 ${carB.electricEnergy} kJ - ${carB.heatLoss} kJ = ${carB.usefulEnergy} kJ이므로 에너지 효율은 (${carB.usefulEnergy} kJ / ${carB.electricEnergy} kJ) × 100 = ${efficiencyB}%입니다. `;
-            
-            if (efficiencyA > efficiencyB) {
-                explanation += `따라서 A의 에너지 효율(${efficiencyA}%)이 B의 에너지 효율(${efficiencyB}%)보다 높으므로 이 선택지는 <strong style="color: #4da6ff;">옳습니다</strong>. `;
-                explanation += `일반적으로 전기 자동차가 일반 자동차보다 에너지 효율이 높지만, 이 문제에서는 주어진 수치를 바탕으로 정확히 계산하여 비교해야 합니다.</p>`;
-            } else {
-                explanation += `따라서 B의 에너지 효율(${efficiencyB}%)이 A의 에너지 효율(${efficiencyA}%)보다 높으므로 이 선택지는 <strong style="color: #ff4d4d;">틀렸습니다</strong>. `;
-                explanation += `전기 자동차는 에너지 전환 과정이 단순하여 에너지 손실이 적고, 회생 제동과 같은 에너지 재사용 기술을 활용하므로 대부분의 경우 일반 자동차보다 높은 에너지 효율을 나타냅니다.</p>`;
-            }
-            
-            // ㄴ 해설
-            explanation += `<p><strong>ㄴ.</strong> 화석 연료를 사용하는 일반 자동차는 연료의 화학 에너지를 연소를 통해 열에너지로 전환한 후, 이를 다시 역학적 에너지로 변환하는 복잡한 과정을 거치게 됩니다. `;
-            explanation += `이 문제에서 A는 총 ${carA.chemicalEnergy} kJ의 화학 에너지 중 ${carA.heatLoss} kJ이 열에너지로 손실되어, 열에너지 손실 비율이 ${heatRatioA}%입니다. `;
-            
-            if (parseFloat(heatRatioA) > 50) {
-                explanation += `열에너지 손실 비율이 50%를 초과하므로 연소 과정에서 발생하는 열에너지의 비율이 높다고 판단할 수 있으며, 이것이 에너지 효율을 낮추는 주요 원인이 됩니다. `;
-                explanation += `따라서 이 선택지는 <strong style="color: #4da6ff;">옳습니다</strong>. `;
-                explanation += `에너지 전환 단계가 많을수록 각 단계에서 불가피하게 열에너지 형태로 손실되는 에너지가 증가하여 전체적인 에너지 효율이 감소하게 되며, 이는 에너지 보존 법칙에서 에너지의 총량은 보존되지만 유용한 에너지는 감소하는 현상을 보여줍니다.</p>`;
-            } else {
-                explanation += `열에너지 손실 비율이 50% 이하이므로 연소 과정에서 발생하는 열에너지의 비율이 상대적으로 낮은 편입니다. `;
-                explanation += `따라서 이 선택지는 <strong style="color: #ff4d4d;">틀렸습니다</strong>. `;
-                explanation += `일반적으로 내연기관 자동차는 연소 과정에서 많은 양의 열에너지가 발생하고 이 중 상당 부분이 배기가스나 냉각수를 통해 외부로 방출되지만, 이 문제의 경우 주어진 수치상으로는 열손실 비율이 높지 않아 이 선택지가 옳지 않습니다.</p>`;
-            }
-            
-            // ㄷ 해설
-            explanation += `<p><strong>ㄷ.</strong> 전기 자동차는 회생 제동(regenerative braking) 시스템을 갖추고 있어, 브레이크를 밟아 감속하거나 내리막길을 주행할 때 줄어드는 운동 에너지를 전기 에너지로 전환하여 배터리에 다시 저장할 수 있습니다. `;
-            explanation += `이는 전기 모터가 구동 모터로도, 발전기로도 작동할 수 있는 특성을 활용한 것으로, 일반 자동차에서는 브레이크 마찰에 의해 열에너지로 완전히 소멸되는 운동 에너지의 일부를 회수하여 재사용할 수 있게 합니다. `;
-            explanation += `이러한 에너지 재사용 기술은 전기 자동차의 전체적인 에너지 효율을 크게 향상시키는 중요한 요소이며, 특히 도심 주행이나 반복적인 가감속이 많은 상황에서 에너지 절약 효과가 두드러집니다. `;
-            explanation += `따라서 이 선택지는 <strong style="color: #4da6ff;">옳습니다</strong>.</p>`;
-            
-            document.getElementById('explanation').innerHTML = explanation;
-            document.getElementById('explanation').style.display = 'block';
-        }
-    </script>
+    <div class="gauge-bar-bg">
+      <div class="gauge-bar-fill" id="gaugeFill"></div>
+    </div>
+  </div>
+
+  <!-- ===================== 문제 카드 ===================== -->
+  <div class="card">
+    <h2>📘 문제: 스위치 S와 저항 R 구하기</h2>
+    <p style="font-size:13px; line-height:1.6; margin:0 0 8px;">
+      그림은 전압이 일정한 전원에 저항값이 각각
+      <strong id="r1label">3Ω</strong>, <strong id="r2label">6Ω</strong>,
+      <strong>R</strong>인 3개의 저항, 스위치 S, 전류계를 연결한 회로이다.
+      전류계는 <strong>3Ω 저항이 있는 가지</strong>에 흐르는 전류를 측정한다.
+      S를 닫기 전과 후 전류계에 흐르는 전류의 세기는 각각
+      <strong id="i1label">6A</strong>, <strong id="i2label">10A</strong>이다.
+    </p>
+
+    <div class="circuit-box">
+      <svg id="circuitSvg" viewBox="0 0 320 265" width="100%"></svg>
+    </div>
+
+    <div class="given-values">
+      <div class="value-chip">S 열기 전<span class="big" id="chipI1">6A</span></div>
+      <div class="value-chip">S 닫은 후<span class="big" id="chipI2">10A</span></div>
+    </div>
+
+    <div class="input-row">
+      <input type="number" id="answerInput" placeholder="R 값 입력">
+      <span class="unit">Ω</span>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-check" onclick="checkAnswer()">✅ 정답 확인</button>
+      <button class="btn-new" onclick="generateProblem()">🔄 새 문제</button>
+    </div>
+
+    <button class="btn-hint" onclick="showHint()">💡 힌트 보기</button>
+    <div class="hint-area" id="hintArea"></div>
+
+    <div class="result-area" id="resultArea"></div>
+  </div>
+
+</div>
+
+<!-- ===================== 승리 오버레이 ===================== -->
+<div id="victoryOverlay">
+  <div class="victory-card">
+    <div class="pika-face" id="pikaHappy"></div>
+    <h2>피카츄, 챔피언 등극!!</h2>
+    <p>감사합니다! 덕분에 월드챔피언십에서 우승했습니다!<br>금산여고 물리Ⅱ 최고!! 🏆</p>
+    <button onclick="restartGame()">다시 도전하기</button>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   피카츄 회로 챌린지 - 스크립트
+   ------------------------------------------------------------------------
+   회로 구조 (절대 변경 금지 / 원본 문제와 동일한 구조):
+
+     - 위쪽 가지: 전류계(A) - r1(3Ω) - 노드B - R  (모두 직렬)
+       => 전류계는 오직 "r1(3Ω)+R 가지"에 흐르는 전류만 측정한다.
+     - 아래쪽 가지: r2(6Ω) 단독. 전류계를 거치지 않는 완전히 별개의
+       병렬 가지이며, 전원(배터리)에 직접 연결되어 있다.
+     - 스위치 S: 노드B(3Ω과 R 사이)와 오른쪽 도선(=배터리(+) 쪽 도선,
+       R의 오른쪽 끝과 같은 지점)을 연결한다.
+
+   회로 동작 원리:
+     - S가 열려 있을 때:
+         전류계가 측정하는 전류는 r1+R 직렬 경로를 따라 흐른다.
+         V = I1 * (r1 + R)                      ... (식 1)
+         (r2 가지는 별개로 흐르지만 전류계와는 무관)
+
+     - S를 닫으면:
+         노드B가 배터리(+) 쪽 도선과 직접 연결되므로
+         R의 양 끝이 같은 지점(등전위)이 되어 R은 회로에서
+         단락(short)되어 사실상 저항 역할을 하지 못한다.
+         이제 전류계가 측정하는 전류는 r1 하나만 지나간다.
+         V = I2 * r1                             ... (식 2)
+
+     - 전원 전압 V는 일정하므로 (식1)=(식2):
+         I1 * (r1 + R) = I2 * r1
+         => R = r1 * (I2 - I1) / I1
+
+     - r2(6Ω)는 전류계와 무관한 독립적인 병렬 가지이므로
+       R을 구하는 계산 자체에는 영향을 주지 않는다. (회로 구성상
+       항상 존재하지만, 정답 도출에는 r1, I1, I2 만 사용된다.)
+   ========================================================================= */
+
+let r1, r2, R, I1, I2;   // 현재 문제의 값들
+let score = 0;           // 맞힌 문제 수 (0~5)
+let hintStep = 0;        // 현재까지 공개한 힌트 단계
+const GOAL = 5;
+
+/* ---------- 유틸 함수 ---------- */
+function randInt(min, max){
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+/* ---------- 문제 생성 함수 ---------- */
+function generateProblem(){
+  // R = r1 * (I2 - I1) / I1 이 항상 자연수가 되도록 역산해서 생성한다.
+  // I1 = k * r1  (r1의 배수로 두면 나눗셈이 항상 딱 떨어짐)
+  // I2 = k * (r1 + R)
+  r1 = randInt(2, 9);        // 전류계와 직렬인 저항 (원본의 3Ω 자리)
+  r2 = randInt(2, 9);        // 독립적인 병렬 저항 (원본의 6Ω 자리, 계산엔 미사용)
+  R  = randInt(1, 9);        // 정답이 될 R (자연수)
+  const k = randInt(1, 4);   // 전류 스케일용 배수 (문제 다양성을 위함)
+
+  I1 = k * r1;                 // S 열기 전 전류계 값
+  I2 = k * (r1 + R);           // S 닫은 후 전류계 값
+
+  // 화면에 표시
+  document.getElementById('r1label').textContent = r1 + 'Ω';
+  document.getElementById('r2label').textContent = r2 + 'Ω';
+  document.getElementById('i1label').textContent = I1 + 'A';
+  document.getElementById('i2label').textContent = I2 + 'A';
+  document.getElementById('chipI1').textContent = I1 + 'A';
+  document.getElementById('chipI2').textContent = I2 + 'A';
+
+  document.getElementById('answerInput').value = '';
+
+  const resultArea = document.getElementById('resultArea');
+  resultArea.className = 'result-area';
+  resultArea.innerHTML = '';
+
+  const hintArea = document.getElementById('hintArea');
+  hintArea.className = 'hint-area';
+  hintArea.innerHTML = '';
+  hintStep = 0;
+
+  drawCircuit();
+}
+
+/* ---------- 회로도 그리기 (SVG, 배치 고정) ---------- */
+function drawCircuit(){
+  const svg = document.getElementById('circuitSvg');
+
+  // 지그재그 저항 기호를 만드는 헬퍼
+  function zigzag(x1, y, x2, label){
+    const segs = 6;
+    const w = (x2 - x1) / segs;
+    let d = `M ${x1} ${y}`;
+    for(let i=0;i<segs;i++){
+      const xa = x1 + w*(i+0.5);
+      const ya = (i % 2 === 0) ? y - 10 : y + 10;
+      d += ` L ${xa} ${ya}`;
+    }
+    d += ` L ${x2} ${y}`;
+    return `<path d="${d}" stroke="#2b2b2b" stroke-width="2.5" fill="none"/>
+            <text x="${(x1+x2)/2}" y="${y-16}" font-size="13" font-weight="bold" text-anchor="middle" fill="#C0392B">${label}</text>`;
+  }
+
+  svg.innerHTML = `
+    <!-- ===== 왼쪽 분기점 L: 두 병렬 가지가 여기서 나뉜다 ===== -->
+    <line x1="40" y1="230" x2="40" y2="140" stroke="#2b2b2b" stroke-width="2.5"/>
+    <circle cx="40" cy="140" r="3.5" fill="#2b2b2b"/>
+    <text x="18" y="145" font-size="11" text-anchor="middle" fill="#3B4CCA">L</text>
+
+    <!-- ===== 위쪽 가지: L에서 위로 - 전류계(A) - 약간의 회로 - r1 - 약간의 회로 - 노드M - 약간의 회로 - R - 약간의 회로 - 전원(+) ===== -->
+    <line x1="40" y1="140" x2="40" y2="114" stroke="#2b2b2b" stroke-width="2.5"/>
+    <circle cx="40" cy="96" r="16" fill="#fff" stroke="#3B4CCA" stroke-width="2.5"/>
+    <text x="40" y="101" font-size="14" font-weight="bold" text-anchor="middle" fill="#3B4CCA">A</text>
+    <line x1="40" y1="78" x2="40" y2="50" stroke="#2b2b2b" stroke-width="2.5"/>
+
+    <line x1="40" y1="50" x2="72" y2="50" stroke="#2b2b2b" stroke-width="2.5"/>
+    ${zigzag(72, 50, 140, r1 + 'Ω')}
+    <line x1="140" y1="50" x2="160" y2="50" stroke="#2b2b2b" stroke-width="2.5"/>
+    <circle cx="160" cy="50" r="3.5" fill="#2b2b2b"/>
+    <text x="160" y="30" font-size="11" text-anchor="middle" fill="#3B4CCA">M</text>
+    <line x1="160" y1="50" x2="190" y2="50" stroke="#2b2b2b" stroke-width="2.5"/>
+    ${zigzag(190, 50, 258, 'R')}
+    <line x1="258" y1="50" x2="300" y2="50" stroke="#2b2b2b" stroke-width="2.5"/>
+
+    <!-- 오른쪽 세로선 (전원 (+) 쪽과 같은 전위, R의 오른쪽 끝과 연결) -->
+    <line x1="300" y1="50" x2="300" y2="230" stroke="#2b2b2b" stroke-width="2.5"/>
+
+    <!-- ===== 아래쪽 가지: L에서 오른쪽으로 - 약간의 회로 - r2 - 약간의 회로 - 오른쪽 도선(전원 (+))까지 항상 연결 ===== -->
+    <line x1="40" y1="140" x2="72" y2="140" stroke="#2b2b2b" stroke-width="2.5"/>
+    ${zigzag(72, 140, 140, r2 + 'Ω')}
+    <line x1="140" y1="140" x2="300" y2="140" stroke="#2b2b2b" stroke-width="2.5"/>
+
+    <!-- ===== 스위치 S: 노드M에서 내려와 - 약간의 회로 - 스위치(열림 표시 대각선) - 약간의 회로 - 아래쪽 도선(140행)에 연결 ===== -->
+    <!-- 닫히면 노드M이 전원(+) 쪽과 같은 전위가 되어 R이 단락(short)된다 -->
+    <line x1="160" y1="50" x2="160" y2="78" stroke="#2b2b2b" stroke-width="2"/>
+    <circle cx="160" cy="81" r="3" fill="#2b2b2b"/>
+    <line x1="160" y1="81" x2="184" y2="100" stroke="#2b2b2b" stroke-width="2.5"/>
+    <circle cx="188" cy="103" r="3" fill="#2b2b2b"/>
+    <line x1="188" y1="103" x2="188" y2="140" stroke="#2b2b2b" stroke-width="2"/>
+    <text x="200" y="92" font-size="13" font-weight="bold" fill="#3B4CCA">S</text>
+
+    <!-- ===== 아래쪽 가로선 + 전원 (왼쪽 +, 오른쪽 -) ===== -->
+    <line x1="40" y1="230" x2="150" y2="230" stroke="#2b2b2b" stroke-width="2.5"/>
+    <line x1="190" y1="230" x2="300" y2="230" stroke="#2b2b2b" stroke-width="2.5"/>
+    <!-- 왼쪽: 길고 얇은 선 = (+) 극 -->
+    <line x1="160" y1="215" x2="160" y2="245" stroke="#2b2b2b" stroke-width="2"/>
+    <!-- 오른쪽: 짧고 굵은 선 = (-) 극 -->
+    <line x1="180" y1="220" x2="180" y2="240" stroke="#2b2b2b" stroke-width="4"/>
+    <line x1="150" y1="230" x2="160" y2="230" stroke="#2b2b2b" stroke-width="2.5"/>
+    <line x1="180" y1="230" x2="190" y2="230" stroke="#2b2b2b" stroke-width="2.5"/>
+    <text x="142" y="222" font-size="13" font-weight="bold" fill="#C0392B">+</text>
+    <text x="196" y="222" font-size="13" font-weight="bold" fill="#C0392B">−</text>
+    <text x="170" y="252" font-size="12" text-anchor="middle" fill="#2b2b2b">전원</text>
+  `;
+}
+
+/* ---------- 힌트 기능 ---------- */
+function showHint(){
+  const hintArea = document.getElementById('hintArea');
+  hintArea.classList.add('show');
+
+  const hints = [
+    `힌트 1️⃣ : 전류계는 <strong>${r1}Ω 저항이 있는 위쪽 가지</strong>에 흐르는 전류만 측정해요.
+     ${r2}Ω 가지는 완전히 독립된 병렬 가지라서 전류계 값과는 상관이 없어요.`,
+    `힌트 2️⃣ : 스위치 S를 닫으면 R의 양쪽 끝이 같은 도선으로 연결돼요.
+     즉, R의 저항값과 상관없이 그 구간의 전압은 0V가 되어 R은 "단락(short)"돼요.
+     그럼 S를 닫았을 때 전류계에는 어떤 저항만 남아서 전류가 흐를까요?`,
+    `힌트 3️⃣ : 두 상황 모두 전원 전압 V는 같아요.<br>
+     S 열림: V = I₁ × (${r1} + R)<br>
+     S 닫힘: V = I₂ × ${r1}<br>
+     이 두 식을 연립해서 R에 대해 정리해보세요!`
+  ];
+
+  if(hintStep < hints.length){
+    hintArea.innerHTML += `<div class="hint-title">${hintStep === 0 ? '🔎 힌트' : ''}</div><p>${hints[hintStep]}</p>`;
+    hintStep++;
+  }
+  if(hintStep >= hints.length){
+    // 힌트를 모두 확인했으면 버튼 비활성화 느낌으로 안내만 추가
+    hintArea.innerHTML += `<p style="color:#888; font-size:12px;">💡 모든 힌트를 확인했어요. 이제 직접 풀어보세요!</p>`;
+  }
+}
+
+/* ---------- 정답 확인 ---------- */
+function checkAnswer(){
+  const input = document.getElementById('answerInput');
+  const val = parseFloat(input.value);
+
+  if(isNaN(val)){
+    alert('R 값을 숫자로 입력해주세요!');
+    return;
+  }
+
+  if(val === R){
+    showCorrect();
+  } else {
+    showWrong();
+  }
+}
+
+/* ---------- 풀이 텍스트 생성 ---------- */
+function buildSolutionHTML(){
+  return `
+    <p>① 전류계는 <strong>${r1}Ω 저항이 있는 가지</strong>에 흐르는 전류만 측정합니다.
+       ${r2}Ω 가지는 전류계와 무관한 별개의 병렬 가지예요.</p>
+    <p>② S가 열려 있을 때는 전류계 값이 ${r1}Ω과 R의 <strong>직렬</strong> 경로를 흐르는 전류입니다. (옴의 법칙)</p>
+    <p>&nbsp;&nbsp;V = I₁ × (${r1} + R) = ${I1} × (${r1} + R) &nbsp;&nbsp;… (식 1)</p>
+    <p>③ S를 닫으면 노드B가 오른쪽 도선(전원 (+) 쪽)과 바로 연결되어
+       R의 양 끝이 같은 전위가 됩니다. 즉 <strong>R이 단락(short)</strong>되어
+       전류계에는 ${r1}Ω 하나만 남습니다.</p>
+    <p>&nbsp;&nbsp;V = I₂ × ${r1} = ${I2} × ${r1} &nbsp;&nbsp;… (식 2)</p>
+    <p>④ 전원 전압 V는 일정하므로 (식1) = (식2):</p>
+    <p>&nbsp;&nbsp;${I1} × (${r1} + R) = ${I2} × ${r1}</p>
+    <p>&nbsp;&nbsp;R = ${r1} × (${I2} − ${I1}) ÷ ${I1} = <strong>${R}Ω</strong></p>
+  `;
+}
+
+/* ---------- 정답 처리 ---------- */
+function showCorrect(){
+  const resultArea = document.getElementById('resultArea');
+  resultArea.className = 'result-area show correct';
+  resultArea.innerHTML = `
+    <div class="result-title correct-title">🎉 정답입니다! 피카츄가 힘을 얻었다!</div>
+    ${buildSolutionHTML()}
+  `;
+
+  score = Math.min(score + 1, GOAL);
+  updateGauge();
+
+  if(score >= GOAL){
+    setTimeout(showVictory, 600);
+  }
+}
+
+/* ---------- 오답 처리 ---------- */
+function showWrong(){
+  const resultArea = document.getElementById('resultArea');
+  resultArea.className = 'result-area show wrong';
+  resultArea.innerHTML = `
+    <div class="result-title wrong-title">💦 실망입니다… 금산여고 학생들…</div>
+    <div class="sad-pika">${getSadPikaSVG()}</div>
+    ${buildSolutionHTML()}
+  `;
+
+  // 화면 흔들림 효과
+  const app = document.getElementById('app');
+  app.classList.remove('shake');
+  void app.offsetWidth; // reflow로 애니메이션 재시작
+  app.classList.add('shake');
+
+  // 붉은색 실패 플래시 효과
+  const flash = document.getElementById('flashOverlay');
+  flash.classList.remove('active');
+  void flash.offsetWidth;
+  flash.classList.add('active');
+}
+
+/* ---------- 진행 게이지 갱신 ---------- */
+function updateGauge(){
+  document.getElementById('gaugeText').textContent = `${score} / ${GOAL}`;
+  document.getElementById('gaugeFill').style.width = (score / GOAL * 100) + '%';
+}
+
+/* ---------- 승리 연출 ---------- */
+function showVictory(){
+  document.getElementById('victoryOverlay').classList.add('show');
+  launchConfetti();
+}
+
+function launchConfetti(){
+  const colors = ['#FFCB05', '#3B4CCA', '#E3350D', '#2ECC71', '#fff'];
+  for(let i=0;i<40;i++){
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random()*100 + 'vw';
+    c.style.background = colors[randInt(0,colors.length-1)];
+    c.style.animationDuration = (2 + Math.random()*1.5) + 's';
+    c.style.animationDelay = (Math.random()*0.5) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+
+/* ---------- 게임 재시작 ---------- */
+function restartGame(){
+  score = 0;
+  updateGauge();
+  document.getElementById('victoryOverlay').classList.remove('show');
+  generateProblem();
+}
+
+/* =========================================================================
+   피카 마스코트 SVG (Pokemon 원작 캐릭터를 그대로 복제하지 않고,
+   게임 분위기에 맞춰 새로 그린 노란색 전기 마스코트 일러스트)
+   - 신난 버전: 만세 자세 + 활짝 웃는 표정 (5문제 클리어 시 사용)
+   - 실망한 버전: 처진 귀 + 눈물 (오답 시 사용)
+   ========================================================================= */
+function getHappyPikaSVG(){
+  return `
+  <svg viewBox="0 0 200 200" width="130" height="130" xmlns="http://www.w3.org/2000/svg">
+    <!-- 몸통 -->
+    <ellipse cx="100" cy="125" rx="58" ry="52" fill="#FFCB05"/>
+    <!-- 귀 (만세 느낌으로 위로 쭉) -->
+    <path d="M 68 65 L 45 8 L 82 60 Z" fill="#FFCB05"/>
+    <path d="M 45 8 L 33 22 L 68 65 Z" fill="#2b2b2b"/>
+    <path d="M 132 65 L 155 8 L 118 60 Z" fill="#FFCB05"/>
+    <path d="M 155 8 L 167 22 L 132 65 Z" fill="#2b2b2b"/>
+    <!-- 팔 (만세) -->
+    <path d="M 55 118 Q 15 95 8 55" stroke="#FFCB05" stroke-width="18" fill="none" stroke-linecap="round"/>
+    <path d="M 145 118 Q 185 95 192 55" stroke="#FFCB05" stroke-width="18" fill="none" stroke-linecap="round"/>
+    <!-- 볼 -->
+    <circle cx="62" cy="128" r="15" fill="#EE4B2B"/>
+    <circle cx="138" cy="128" r="15" fill="#EE4B2B"/>
+    <!-- 눈 (반달 웃는 눈) -->
+    <path d="M 72 105 Q 82 92 92 105" stroke="#2b2b2b" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M 108 105 Q 118 92 128 105" stroke="#2b2b2b" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <!-- 입 (활짝 웃음) -->
+    <path d="M 78 138 Q 100 168 122 138 Q 100 156 78 138 Z" fill="#A8321F"/>
+  </svg>`;
+}
+
+function getSadPikaSVG(){
+  return `
+  <svg viewBox="0 0 200 200" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+    <!-- 몸통 -->
+    <ellipse cx="100" cy="130" rx="55" ry="48" fill="#FFCB05"/>
+    <!-- 귀 (축 처짐) -->
+    <path d="M 62 95 Q 30 70 40 25 Q 60 55 78 90 Z" fill="#FFCB05"/>
+    <path d="M 40 25 Q 34 35 45 50 Q 55 65 62 78" fill="#2b2b2b" opacity="0"/>
+    <path d="M 42 27 L 32 33 L 55 65 Z" fill="#2b2b2b"/>
+    <path d="M 138 95 Q 170 70 160 25 Q 140 55 122 90 Z" fill="#FFCB05"/>
+    <path d="M 158 27 L 168 33 L 145 65 Z" fill="#2b2b2b"/>
+    <!-- 팔 (축 늘어짐) -->
+    <path d="M 55 145 Q 30 155 25 175" stroke="#FFCB05" stroke-width="16" fill="none" stroke-linecap="round"/>
+    <path d="M 145 145 Q 170 155 175 175" stroke="#FFCB05" stroke-width="16" fill="none" stroke-linecap="round"/>
+    <!-- 볼 -->
+    <circle cx="65" cy="132" r="13" fill="#EE4B2B" opacity="0.7"/>
+    <circle cx="135" cy="132" r="13" fill="#EE4B2B" opacity="0.7"/>
+    <!-- 눈 (울상, 눈물) -->
+    <path d="M 74 118 Q 82 128 90 118" stroke="#2b2b2b" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M 110 118 Q 118 128 126 118" stroke="#2b2b2b" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M 78 125 Q 74 140 78 150 Q 82 140 78 125 Z" fill="#5DADE2"/>
+    <path d="M 122 125 Q 118 140 122 150 Q 126 140 122 125 Z" fill="#5DADE2"/>
+    <!-- 입 (시무룩) -->
+    <path d="M 85 158 Q 100 148 115 158" stroke="#2b2b2b" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </svg>`;
+}
+
+/* ---------- 초기화 ---------- */
+window.onload = function(){
+  updateGauge();
+  generateProblem();
+  document.getElementById('pikaHappy').innerHTML = getHappyPikaSVG();
+};
+</script>
 </body>
 </html>

@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>⛏️ 마크 물리학 - 돌림힘!</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Jua&family=Black+Han+Sans&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: #5BB8F5;
+  min-height: 100vh;
+  font-family: 'Jua', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── 하늘 배경 + 구름 ── */
+.sky-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background: linear-gradient(180deg, #5BB8F5 0%, #A8DFFF 60%, #C8EDFF 100%);
+  overflow: hidden;
+}
+.cloud {
+  position: absolute;
+  background: white;
+  border-radius: 4px;
+  opacity: .92;
+  animation: driftCloud linear infinite;
+}
+@keyframes driftCloud {
+  from { transform: translateX(-300px); }
+  to   { transform: translateX(110vw); }
+}
+
+.page {
+  position: relative; z-index: 1;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 10px 10px 90px;
+}
+
+/* ════════ TITLE ════════ */
+.title-card {
+  background: #FFEE58;
+  border: 4px solid #F9A825;
+  border-radius: 8px;
+  box-shadow: 0 6px 0 #E65100;
+  padding: 14px 12px 12px;
+  text-align: center;
+  margin-bottom: 11px;
+}
+.title-card h1 {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 24px;
+  color: #1B5E20;
+  text-shadow: 2px 3px 0 #A5D6A7;
+  letter-spacing: 1px;
+}
+.title-sub {
+  font-size: 13px; color: #5D4037; margin-top: 3px; font-weight: 700;
+}
+
+/* ── mob parade ── */
+.mob-row {
+  display: flex; justify-content: center; gap: 6px; margin-top: 10px;
+}
+.mc-mob {
+  image-rendering: pixelated;
+  width: 48px; height: 48px;
+  animation: boing .85s ease-in-out infinite alternate;
+  flex-shrink: 0;
+}
+.mc-mob:nth-child(2){animation-delay:.12s}
+.mc-mob:nth-child(3){animation-delay:.24s}
+.mc-mob:nth-child(4){animation-delay:.36s}
+.mc-mob:nth-child(5){animation-delay:.48s}
+@keyframes boing {
+  from { transform: translateY(0) scaleY(1); }
+  to   { transform: translateY(-10px) scaleY(1.08); }
+}
+
+/* ════════ XP ════════ */
+.xp-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: #43A047;
+  border: 3px solid #1B5E20;
+  border-radius: 6px;
+  box-shadow: 0 4px 0 #1B5E20;
+  padding: 7px 10px;
+  margin-bottom: 11px;
+}
+.xp-label { font-size: 13px; color: #F9FBE7; white-space: nowrap; }
+.xp-track { flex:1; height:13px; background:#1B5E20; border-radius:3px; border:2px solid #0A3B0A; overflow:hidden; }
+.xp-fill  { height:100%; background:linear-gradient(90deg,#CCFF90,#76FF03); border-radius:2px; transition:width .4s; width:0%; }
+.xp-num   { font-size:13px; color:#F9FBE7; white-space:nowrap; }
+
+/* ════════ CARDS ════════ */
+.card {
+  border-radius: 8px;
+  border: 3px solid;
+  padding: 12px;
+  margin-bottom: 11px;
+}
+.card-sky   { background:#E1F5FE; border-color:#0288D1; box-shadow:0 5px 0 #01579B; }
+.card-lime  { background:#F9FBE7; border-color:#8BC34A; box-shadow:0 5px 0 #558B2F; }
+.card-peach { background:#FFF8E1; border-color:#FFB300; box-shadow:0 5px 0 #E65100; }
+.card-title {
+  font-family:'Black Han Sans',sans-serif;
+  font-size: 15px;
+  margin-bottom: 9px;
+}
+.card-sky   .card-title { color:#01579B; }
+.card-lime  .card-title { color:#33691E; }
+.card-peach .card-title { color:#BF360C; }
+
+/* ════════ DIAGRAM — BIG ════════ */
+.dia-wrap {
+  background: #B3E5FC;
+  border: 3px solid #0288D1;
+  border-radius: 6px;
+  overflow: hidden;
+  width: 100%;
+}
+.dia-wrap svg { display:block; width:100%; }
+
+/* ════════ VALUE CHIPS ════════ */
+.chips { display:flex; flex-wrap:wrap; gap:7px; margin-top:6px; }
+.chip {
+  background:#FFF9C4; border:2px solid #F9A825;
+  border-radius:20px; padding:5px 13px;
+  font-size:14px; color:#4E342E; font-weight:700;
+  box-shadow:0 3px 0 #E65100;
+}
+.chip b { color:#D84315; }
+
+/* ════════ OPTIONS ════════ */
+.opts { display:flex; flex-direction:column; gap:9px; }
+.opt-btn {
+  display:flex; align-items:flex-start; gap:10px;
+  background:white; border:3px solid #FFB300;
+  border-radius:8px; padding:12px 12px;
+  font-family:'Jua',sans-serif; font-size:14px; color:#3E2723;
+  text-align:left; cursor:pointer; line-height:1.55;
+  box-shadow:0 4px 0 #E65100;
+  transition:background .12s, border-color .12s, transform .08s;
+}
+.opt-btn:active { transform:translateY(2px); box-shadow:0 2px 0 #E65100; }
+.opt-btn.sel   { background:#FFF9C4; border-color:#F57F17; }
+.opt-btn.ok    { background:#DCEDC8; border-color:#558B2F; box-shadow:0 4px 0 #33691E; }
+.opt-btn.ng    { background:#FFCCBC; border-color:#BF360C; box-shadow:0 4px 0 #7F0000; }
+.opt-badge {
+  flex-shrink:0;
+  width:30px; height:30px; border-radius:6px;
+  background:#FFEE58; border:2px solid #F9A825;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Black Han Sans',sans-serif; font-size:14px; color:#5D4037;
+  box-shadow:0 2px 0 #E65100; margin-top:1px;
+}
+.opt-btn.sel .opt-badge { background:#42A5F5; border-color:#0D47A1; color:white; }
+.opt-btn.ok  .opt-badge { background:#66BB6A; border-color:#2E7D32; color:white; }
+.opt-btn.ng  .opt-badge { background:#EF5350; border-color:#B71C1C; color:white; }
+
+/* ════════ HINT ════════ */
+.hint-btn {
+  display:inline-block; margin-top:10px;
+  background:#FFF9C4; border:2px solid #FFB300;
+  border-radius:20px; padding:6px 16px;
+  font-size:13px; color:#E65100; font-weight:700;
+  cursor:pointer; box-shadow:0 3px 0 #E65100;
+  transition:transform .08s;
+}
+.hint-btn:active { transform:translateY(1px); }
+.hint-content {
+  display:none; margin-top:8px;
+  background:#FFFDE7; border:2px dashed #FFB300;
+  border-radius:8px; padding:10px 12px;
+  font-size:13px; color:#4E342E; line-height:1.75;
+}
+.hint-content.open { display:block; }
+
+/* ════════ BUTTONS ════════ */
+.btn-row { display:flex; gap:9px; margin-top:12px; }
+.mc-btn {
+  flex:1; padding:15px 8px;
+  border:none; border-radius:8px;
+  font-family:'Black Han Sans',sans-serif; font-size:16px;
+  cursor:pointer; transition:transform .08s;
+  letter-spacing:.5px;
+}
+.mc-btn:active { transform:translateY(3px); }
+.btn-green { background:#43A047; color:white; box-shadow:0 6px 0 #1B5E20; text-shadow:1px 2px 0 rgba(0,0,0,.3); }
+.btn-green:active { box-shadow:0 2px 0 #1B5E20; }
+.btn-orange { background:#FB8C00; color:white; box-shadow:0 6px 0 #BF360C; text-shadow:1px 2px 0 rgba(0,0,0,.3); }
+.btn-orange:active { box-shadow:0 2px 0 #BF360C; }
+
+/* ════════ FEEDBACK ════════ */
+.feedback {
+  display:none; border-radius:8px; padding:14px;
+  margin-top:11px; font-size:13px; line-height:1.8;
+  animation:popIn .22s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
+.feedback.show { display:block; }
+.fb-ok { background:#F1F8E9; border:3px solid #558B2F; box-shadow:0 5px 0 #33691E; }
+.fb-ng { background:#FFF3E0; border:3px solid #FB8C00; box-shadow:0 5px 0 #BF360C; }
+.fb-head {
+  font-family:'Black Han Sans',sans-serif; font-size:18px; margin-bottom:10px;
+}
+.fb-ok .fb-head { color:#2E7D32; }
+.fb-ng .fb-head { color:#BF360C; }
+.fb-step {
+  background:white; border-left:4px solid #FFEE58;
+  border-radius:0 8px 8px 0; padding:8px 11px; margin:6px 0;
+  font-size:13px; color:#3E2723; box-shadow:0 2px 0 rgba(0,0,0,.06);
+}
+.hl  { color:#D84315; font-weight:900; }
+.hl2 { color:#0D47A1; font-weight:900; }
+
+.react-row {
+  display:flex; justify-content:center; gap:8px; margin:8px 0;
+}
+.react-row svg {
+  image-rendering:pixelated;
+  animation:boing .7s ease-in-out infinite alternate;
+}
+.react-row svg:nth-child(2){animation-delay:.15s}
+.react-row svg:nth-child(3){animation-delay:.30s}
+</style>
+</head>
+<body>
+
+<!-- 하늘 배경 & 구름 -->
+<div class="sky-bg" id="skyBg"></div>
+
+<div class="page">
+
+  <!-- XP -->
+  <div class="xp-bar">
+    <span class="xp-label">⚔️ XP</span>
+    <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
+    <span class="xp-num" id="xpNum">0 / 0</span>
+  </div>
+
+  <!-- 타이틀 -->
+  <div class="title-card">
+    <h1>⛏️ 돌림힘 마스터!</h1>
+    <div class="title-sub">2015 개정 물리학Ⅱ · 지레 평형 연습</div>
+    <div class="mob-row" id="mobRow"></div>
+  </div>
+
+  <!-- 다이어그램 -->
+  <div class="card card-sky">
+    <div class="card-title">📐 문제 상황</div>
+    <div class="dia-wrap">
+      <svg id="diaSvg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- 배경 하늘 -->
+        <rect width="360" height="220" fill="#B3E5FC"/>
+
+        <!-- 구름들 -->
+        <rect x="20"  y="18" width="60" height="16" rx="4" fill="white" opacity=".95"/>
+        <rect x="30"  y="10" width="40" height="16" rx="4" fill="white" opacity=".95"/>
+        <rect x="200" y="14" width="70" height="16" rx="4" fill="white" opacity=".95"/>
+        <rect x="212" y="6"  width="46" height="16" rx="4" fill="white" opacity=".95"/>
+        <rect x="295" y="20" width="50" height="14" rx="3" fill="white" opacity=".90"/>
+
+        <!-- ═══ 천장 (oak planks) ═══ -->
+        <rect x="0" y="0"  width="360" height="22" fill="#CE9A4A"/>
+        <rect x="0" y="0"  width="360" height="5"  fill="#FFD54F" opacity=".6"/>
+        <rect x="0" y="18" width="360" height="4"  fill="#795548"/>
+        <!-- plank dividers -->
+        <line x1="60"  y1="0" x2="60"  y2="22" stroke="#A0692C" stroke-width="2"/>
+        <line x1="120" y1="0" x2="120" y2="22" stroke="#A0692C" stroke-width="2"/>
+        <line x1="180" y1="0" x2="180" y2="22" stroke="#A0692C" stroke-width="2"/>
+        <line x1="240" y1="0" x2="240" y2="22" stroke="#A0692C" stroke-width="2"/>
+        <line x1="300" y1="0" x2="300" y2="22" stroke="#A0692C" stroke-width="2"/>
+        <!-- 천장 텍스트 -->
+        <text x="310" y="14" font-family="Jua,sans-serif" font-size="11" fill="#5D4037" font-weight="bold">천장</text>
+
+        <!-- ═══ 잔디 바닥 ═══ -->
+        <rect x="0" y="195" width="360" height="10" fill="#66BB6A"/>
+        <rect x="0" y="205" width="360" height="15" fill="#8D6E63"/>
+        <!-- 잔디 결 -->
+        <rect x="8"  y="192" width="5" height="7" rx="1" fill="#43A047"/>
+        <rect x="28" y="191" width="5" height="8" rx="1" fill="#43A047"/>
+        <rect x="55" y="192" width="5" height="7" rx="1" fill="#43A047"/>
+        <rect x="90" y="191" width="5" height="8" rx="1" fill="#43A047"/>
+        <rect x="140" y="192" width="5" height="7" rx="1" fill="#43A047"/>
+        <rect x="190" y="191" width="5" height="8" rx="1" fill="#43A047"/>
+        <rect x="240" y="192" width="5" height="7" rx="1" fill="#43A047"/>
+        <rect x="300" y="191" width="5" height="8" rx="1" fill="#43A047"/>
+        <rect x="338" y="192" width="5" height="7" rx="1" fill="#43A047"/>
+
+        <!-- ═══ 꽃/버섯 장식 ═══ -->
+        <!-- 꽃 왼쪽 -->
+        <rect x="13" y="190" width="3" height="8" fill="#66BB6A"/>
+        <rect x="11" y="186" width="3" height="3" fill="#FF8A65"/>
+        <rect x="14" y="184" width="3" height="3" fill="#FF8A65"/>
+        <rect x="17" y="186" width="3" height="3" fill="#FF8A65"/>
+        <rect x="14" y="187" width="3" height="3" fill="#FFF176"/>
+        <!-- 버섯 오른쪽 -->
+        <rect x="328" y="190" width="7" height="7" fill="#EFEBE9"/>
+        <rect x="325" y="184" width="13" height="8" fill="#EF5350"/>
+        <rect x="327" y="186" width="3" height="3" fill="white" opacity=".8"/>
+        <rect x="333" y="185" width="3" height="3" fill="white" opacity=".8"/>
+
+        <!-- ═══ 받침대 (P) ═══ -->
+        <polygon id="pivotTri" points="75,182 60,195 90,195" fill="#FFB300" stroke="#E65100" stroke-width="2.5"/>
+        <rect x="62" y="188" width="26" height="5" fill="#FFD54F" opacity=".7"/>
+        <text id="pLabel" x="68" y="177" font-family="Jua,sans-serif" font-size="12" fill="#0D47A1" font-weight="bold">P</text>
+
+        <!-- ═══ 막대 (oak plank rod) ═══ -->
+        <rect id="rod" x="75" y="172" width="230" height="12" rx="1" fill="#CE9A4A" stroke="#795548" stroke-width="2.5"/>
+        <rect id="rodSheen" x="75" y="173" width="230" height="4" fill="#FFD54F" opacity=".4" rx="1"/>
+        <!-- 나뭇결 -->
+        <line id="gA" x1="115" y1="174" x2="115" y2="182" stroke="#A0692C" stroke-width="1.5"/>
+        <line id="gB" x1="155" y1="174" x2="155" y2="182" stroke="#A0692C" stroke-width="1.5"/>
+        <line id="gC" x1="195" y1="174" x2="195" y2="182" stroke="#A0692C" stroke-width="1.5"/>
+        <line id="gD" x1="235" y1="174" x2="235" y2="182" stroke="#A0692C" stroke-width="1.5"/>
+        <line id="gE" x1="275" y1="174" x2="275" y2="182" stroke="#A0692C" stroke-width="1.5"/>
+
+        <!-- ═══ 물체 (Minecraft chest) ═══ -->
+        <g id="weightGrp">
+          <!-- 실 -->
+          <rect id="wRope" x="143" y="140" width="4" height="32" fill="#795548"/>
+          <!-- 상자 몸통 -->
+          <rect id="wBody" x="126" y="100" width="40" height="40" fill="#A0522D" stroke="#5D4037" stroke-width="2.5"/>
+          <!-- 상자 뚜껑 -->
+          <rect id="wLid" x="128" y="102" width="36" height="13" fill="#CE9A4A"/>
+          <rect id="wLidSheen" x="128" y="102" width="36" height="4" fill="#FFD54F" opacity=".5"/>
+          <!-- 금속 테두리 -->
+          <rect id="wRim" x="126" y="115" width="40" height="3" fill="#FFD54F" stroke="#F57F17" stroke-width="1"/>
+          <!-- 자물쇠 -->
+          <rect id="wLock" x="143" y="120" width="10" height="12" rx="1" fill="#FFD54F" stroke="#F57F17" stroke-width="1.5"/>
+          <rect id="wLockHole" x="146" y="125" width="4" height="4" fill="#F57F17"/>
+          <!-- 무게 태그 -->
+          <rect id="wTag" x="120" y="87" width="50" height="16" rx="4" fill="#FFEE58" stroke="#F9A825" stroke-width="2"/>
+          <text id="wText" x="145" y="99" text-anchor="middle" font-family="Jua,sans-serif" font-size="11" fill="#4E342E" font-weight="bold">W N</text>
+        </g>
+
+        <!-- ═══ 실 (thread to ceiling) ═══ -->
+        <line id="thread" x1="305" y1="172" x2="305" y2="22" stroke="#795548" stroke-width="3"/>
+        <!-- 끝 장식 -->
+        <rect id="tTop" x="300" y="18" width="10" height="8" rx="2" fill="#FFD54F" stroke="#F57F17" stroke-width="1.5"/>
+        <circle id="tBot" cx="305" cy="172" r="5" fill="#FFD54F" stroke="#F57F17" stroke-width="1.5"/>
+        <!-- 막대 텍스트 -->
+        <text x="290" y="167" font-family="Jua,sans-serif" font-size="10" fill="#5D4037" font-weight="bold">막대</text>
+        <text x="292" y="50" font-family="Jua,sans-serif" font-size="10" fill="#5D4037" font-weight="bold">실</text>
+
+        <!-- ═══ 치수 화살표 ═══ -->
+        <!-- d1 -->
+        <g id="d1Grp">
+          <line x1="77" y1="200" x2="145" y2="200" stroke="#E53935" stroke-width="2.5" marker-start="url(#aL1)" marker-end="url(#aR1)"/>
+          <rect x="85" y="193" width="48" height="13" rx="3" fill="#FFEBEE"/>
+          <text id="d1Txt" x="109" y="203" text-anchor="middle" font-family="Jua,sans-serif" font-size="10" fill="#B71C1C" font-weight="bold">d₁ m</text>
+        </g>
+        <!-- d2 -->
+        <g id="d2Grp">
+          <line x1="77" y1="213" x2="303" y2="213" stroke="#1565C0" stroke-width="2.5" marker-start="url(#aL2)" marker-end="url(#aR2)"/>
+          <rect id="d2Rect" x="155" y="207" width="56" height="13" rx="3" fill="#E3F2FD"/>
+          <text id="d2Txt" x="183" y="217" text-anchor="middle" font-family="Jua,sans-serif" font-size="10" fill="#0D47A1" font-weight="bold">d₂ m</text>
+        </g>
+
+        <!-- ═══ PIXEL MOB 장식 (다이어그램 안) ═══ -->
+        <!-- 아기 닭 (오른쪽 바닥) -->
+        <g id="chickenDeco" transform="translate(322,174)">
+          <rect x="2"  y="8" width="12" height="9"  fill="#FFEE58"/>
+          <rect x="4"  y="0" width="8"  height="8"  fill="#FFEE58"/>
+          <rect x="8"  y="2" width="3"  height="2"  fill="#212121"/><!-- 눈 -->
+          <rect x="11" y="4" width="4"  height="2"  fill="#FF8F00"/><!-- 부리 -->
+          <rect x="4"  y="0" width="4"  height="3"  fill="#EF5350" rx="1"/><!-- 볏 -->
+          <rect x="2"  y="17" width="2" height="4"  fill="#FF8F00"/><!-- 발 -->
+          <rect x="8"  y="17" width="2" height="4"  fill="#FF8F00"/>
+          <rect x="0"  y="10" width="3" height="5"  fill="#FFEE58" rx="1"/><!-- 날개 -->
+        </g>
+
+        <!-- Arrow marker defs -->
+        <defs>
+          <marker id="aR1" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+            <path d="M0,0 L7,3.5 L0,7Z" fill="#E53935"/>
+          </marker>
+          <marker id="aL1" markerWidth="7" markerHeight="7" refX="2" refY="3.5" orient="auto-start-reverse">
+            <path d="M0,0 L7,3.5 L0,7Z" fill="#E53935"/>
+          </marker>
+          <marker id="aR2" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+            <path d="M0,0 L7,3.5 L0,7Z" fill="#1565C0"/>
+          </marker>
+          <marker id="aL2" markerWidth="7" markerHeight="7" refX="2" refY="3.5" orient="auto-start-reverse">
+            <path d="M0,0 L7,3.5 L0,7Z" fill="#1565C0"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 주어진 값 -->
+  <div class="card card-peach">
+    <div class="card-title">📦 주어진 값 (인벤토리)</div>
+    <div class="chips">
+      <div class="chip">무게 W = <b id="cvW">?</b> N</div>
+      <div class="chip">d₁ = <b id="cvD1">?</b> m</div>
+      <div class="chip">d₂ = <b id="cvD2">?</b> m</div>
+      <div class="chip">막대 질량 = <b style="color:#2E7D32">무시</b></div>
+    </div>
+  </div>
+
+  <!-- 문제 -->
+  <div class="card card-lime">
+    <div class="card-title">❓ 옳은 것만 모두 고르세요</div>
+    <div class="opts" id="optList"></div>
+    <div class="hint-btn" id="hintBtn" onclick="toggleHint()">💡 힌트 보기</div>
+    <div class="hint-content" id="hintBox"></div>
+    <div class="btn-row">
+      <button class="mc-btn btn-green"  onclick="checkAnswer()">✅ 정답 확인</button>
+      <button class="mc-btn btn-orange" onclick="newProblem()">🎲 새 문제</button>
+    </div>
+  </div>
+
+  <!-- 피드백 -->
+  <div class="feedback" id="feedbackBox">
+    <div class="fb-head" id="fbHead"></div>
+    <div class="react-row" id="reactRow"></div>
+    <div id="fbBody"></div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+/* ══════════════════════════════════════
+   PIXEL MOB RENDERER
+   각 몹을 컬러 픽셀 배열 [y, x1, x2, color] 로 정의.
+   x2는 exclusive.
+══════════════════════════════════════ */
+const MOBS = {
+  cow: {
+    size:20,
+    px:[
+      // 몸통
+      [8,3,17,'#FAFAFA'],[9,2,18,'#FAFAFA'],[10,2,18,'#FAFAFA'],
+      [11,2,18,'#FAFAFA'],[12,2,18,'#FAFAFA'],[13,3,17,'#FAFAFA'],
+      // 검은 패치
+      [9,3,7,'#1A1A1A'],[10,3,7,'#1A1A1A'],
+      [10,13,18,'#1A1A1A'],[11,14,18,'#1A1A1A'],
+      // 머리
+      [2,6,14,'#FAFAFA'],[3,5,15,'#FAFAFA'],[4,5,15,'#FAFAFA'],
+      [5,5,15,'#FAFAFA'],[6,6,14,'#FAFAFA'],[7,6,14,'#FAFAFA'],
+      // 눈
+      [3,6,8,'#1A1A1A'],[3,12,14,'#1A1A1A'],
+      // 코
+      [5,7,9,'#F8BBD0'],[5,11,13,'#F8BBD0'],
+      [5,8,9,'#F06292'],[5,12,13,'#F06292'],
+      // 뿔
+      [0,6,8,'#A5D6A7'],[0,12,14,'#A5D6A7'],
+      [1,6,8,'#A5D6A7'],[1,12,14,'#A5D6A7'],
+      // 다리
+      [14,4,7,'#FAFAFA'],[14,13,16,'#FAFAFA'],
+      [15,4,7,'#1A1A1A'],[15,13,16,'#1A1A1A'],
+      [16,4,7,'#FAFAFA'],[16,13,16,'#FAFAFA'],
+      [17,4,6,'#1A1A1A'],[17,14,16,'#1A1A1A'],
+      // 꼬리
+      [9,17,19,'#FAFAFA'],[10,18,20,'#FAFAFA'],
+    ]
+  },
+  pig: {
+    size:20,
+    px:[
+      // 몸통
+      [7,3,17,'#FFCDD2'],[8,2,18,'#FFCDD2'],[9,2,18,'#FFCDD2'],
+      [10,2,18,'#FFCDD2'],[11,2,18,'#FFCDD2'],[12,3,17,'#FFCDD2'],
+      // 머리
+      [1,5,15,'#FFCDD2'],[2,4,16,'#FFCDD2'],[3,4,16,'#FFCDD2'],
+      [4,4,16,'#FFCDD2'],[5,5,15,'#FFCDD2'],[6,5,15,'#FFCDD2'],
+      // 눈
+      [2,6,8,'#1A1A1A'],[2,12,14,'#1A1A1A'],
+      // 코 (큰 핑크)
+      [4,5,15,'#F48FB1'],[5,6,14,'#F48FB1'],
+      [4,7,9,'#E91E63'],[4,11,13,'#E91E63'],
+      [5,7,9,'#E91E63'],[5,11,13,'#E91E63'],
+      // 귀
+      [0,4,7,'#F06292'],[0,13,16,'#F06292'],
+      [1,4,6,'#F06292'],[1,14,16,'#F06292'],
+      // 다리
+      [13,4,7,'#FFCDD2'],[13,13,16,'#FFCDD2'],
+      [14,4,7,'#E91E63'],[14,13,16,'#E91E63'],
+      [15,4,7,'#FFCDD2'],[15,13,16,'#FFCDD2'],
+      [16,4,6,'#E91E63'],[16,14,16,'#E91E63'],
+    ]
+  },
+  sheep: {
+    size:20,
+    px:[
+      // 털 (밝은 흰색)
+      [5,2,18,'#F5F5F5'],[6,1,19,'#F5F5F5'],[7,1,19,'#F5F5F5'],
+      [8,2,18,'#F5F5F5'],[9,2,18,'#F5F5F5'],[10,2,18,'#F5F5F5'],
+      [11,3,17,'#F5F5F5'],
+      // 털 입체감
+      [5,4,6,'#E0E0E0'],[5,9,11,'#E0E0E0'],[5,14,16,'#E0E0E0'],
+      [7,2,4,'#E0E0E0'],[7,11,13,'#E0E0E0'],[7,16,18,'#E0E0E0'],
+      // 얼굴 (연한 갈색)
+      [1,6,14,'#BCAAA4'],[2,5,15,'#BCAAA4'],[3,5,15,'#BCAAA4'],
+      [4,6,14,'#BCAAA4'],
+      // 눈
+      [2,6,8,'#1A1A1A'],[2,12,14,'#1A1A1A'],
+      // 입
+      [3,8,12,'#A1887F'],
+      // 다리
+      [12,4,7,'#BCAAA4'],[12,13,16,'#BCAAA4'],
+      [13,4,7,'#BCAAA4'],[13,13,16,'#BCAAA4'],
+      [14,4,6,'#795548'],[14,14,16,'#795548'],
+      [15,4,6,'#BCAAA4'],[15,14,16,'#BCAAA4'],
+    ]
+  },
+  creeper: {
+    size:20,
+    px:[
+      // 몸통
+      [7,4,16,'#66BB6A'],[8,3,17,'#66BB6A'],[9,3,17,'#66BB6A'],
+      [10,3,17,'#66BB6A'],[11,3,17,'#66BB6A'],[12,4,16,'#66BB6A'],
+      // 머리
+      [0,4,16,'#66BB6A'],[1,3,17,'#66BB6A'],[2,3,17,'#66BB6A'],
+      [3,3,17,'#66BB6A'],[4,3,17,'#66BB6A'],[5,4,16,'#66BB6A'],
+      [6,4,16,'#66BB6A'],
+      // 눈 (어두운 초록)
+      [2,4,7,'#1B5E20'],[3,4,7,'#1B5E20'],
+      [2,13,16,'#1B5E20'],[3,13,16,'#1B5E20'],
+      // 입 (픽셀 무늬)
+      [4,7,9,'#1B5E20'],[4,11,13,'#1B5E20'],
+      [5,7,13,'#1B5E20'],
+      [5,8,12,'#2E7D32'],
+      [6,9,11,'#1B5E20'],
+      // 다리
+      [13,4,8,'#66BB6A'],[13,12,16,'#66BB6A'],
+      [14,4,8,'#4CAF50'],[14,12,16,'#4CAF50'],
+      [15,4,7,'#66BB6A'],[15,13,16,'#66BB6A'],
+      [16,4,7,'#388E3C'],[16,13,16,'#388E3C'],
+    ]
+  },
+  zombie: {
+    size:20,
+    px:[
+      // 몸통 (파란 셔츠)
+      [7,4,16,'#42A5F5'],[8,3,17,'#42A5F5'],[9,3,17,'#42A5F5'],
+      [10,3,17,'#1E88E5'],[11,3,17,'#1E88E5'],[12,4,16,'#1565C0'],
+      // 머리 (좀비 초록)
+      [0,4,16,'#80CBC4'],[1,3,17,'#80CBC4'],[2,3,17,'#80CBC4'],
+      [3,3,17,'#80CBC4'],[4,3,17,'#80CBC4'],[5,4,16,'#80CBC4'],
+      [6,4,16,'#80CBC4'],
+      // 빨간 눈
+      [2,4,7,'#EF5350'],[3,4,7,'#EF5350'],
+      [2,13,16,'#EF5350'],[3,13,16,'#EF5350'],
+      // 입 (벌린 모양)
+      [4,7,13,'#263238'],
+      [5,8,9,'#263238'],[5,12,13,'#263238'],
+      // 팔 (앞으로 뻗음)
+      [8,0,3,'#80CBC4'],[9,0,3,'#80CBC4'],
+      [8,17,20,'#80CBC4'],[9,17,20,'#80CBC4'],
+      // 바지 (어두운)
+      [13,4,8,'#455A64'],[13,12,16,'#455A64'],
+      [14,4,8,'#37474F'],[14,12,16,'#37474F'],
+      [15,4,7,'#455A64'],[15,13,16,'#455A64'],
+      [16,4,7,'#37474F'],[16,13,16,'#37474F'],
+    ]
+  }
+};
+
+function makeMobSVG(key, px=52) {
+  const mob = MOBS[key];
+  if (!mob) return '';
+  const s = px / mob.size;
+  let r = '';
+  for (const [y, x1, x2, c] of mob.px) {
+    r += `<rect x="${x1*s}" y="${y*s}" width="${(x2-x1)*s}" height="${s}" fill="${c}"/>`;
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}" viewBox="0 0 ${px} ${px}" style="image-rendering:pixelated">${r}</svg>`;
+}
+
+/* ══════════════════════════════════════
+   GAME LOGIC
+══════════════════════════════════════ */
+let W, d1, d2, T;
+let opts=[], selected=new Set(), answered=false;
+let score=0, total=0, hintOpen=false;
+
+const rand = arr => arr[Math.floor(Math.random()*arr.length)];
+function shuffled(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function gen() {
+  const Ws=[20,30,40,50,60,80,100,120];
+  W=rand(Ws);
+  const D1=[0.5,1,1.5,2];
+  d1=rand(D1);
+  // d2 > d1, T integer
+  const cands=[];
+  for(let n=3;n<=16;n++){
+    const dc=n*0.5;
+    if(dc<=d1) continue;
+    if(dc>5) break;
+    const Tc=W*d1/dc;
+    if(Number.isInteger(Tc)&&Tc>0&&Tc!==W) cands.push(dc);
+  }
+  d2=cands.length?rand(cands):d1*2;
+  T=Math.round(W*d1/d2);
+
+  // 3 options — randomly wrong
+  const flipN = Math.random()<0.25?0:Math.random()<0.5?1:2;
+  const flipIdx = new Set(shuffled([0,1,2]).slice(0,flipN));
+
+  opts=[
+    buildOpt(0,'ㄱ',flipIdx,
+      `물체가 막대를 당기는 힘의 크기는 <b>${W} N</b>이다.`,
+      `작용·반작용: 물체 무게 = 막대를 당기는 힘 = <b class="hl">${W} N</b>`,
+      ()=>`물체가 막대를 당기는 힘의 크기는 <b>${W+(rand([1,-1])*(rand([10,20])))>0?W+(rand([1,-1]))*(rand([10,20])):W+10} N</b>이다.`
+    ),
+    buildOpt(1,'ㄴ',flipIdx,
+      `P점을 회전축으로 하는 무게의 돌림힘은 <b>${W*d1} N·m</b>이다.`,
+      `τ = ${W} N × ${d1} m = <b class="hl">${W*d1} N·m</b>`,
+      ()=>`P점을 회전축으로 하는 무게의 돌림힘은 <b>${W*d1+rand([W,d1*10])>0?W*d1+W:W*d1-d1*5||W*d1+W} N·m</b>이다.`
+    ),
+    buildOpt(2,'ㄷ',flipIdx,
+      `실이 막대를 당기는 힘의 크기는 <b>${T} N</b>이다.`,
+      `평형: T×${d2}=W×${d1} → T = <b class="hl">${T} N</b>`,
+      ()=>`실이 막대를 당기는 힘의 크기는 <b>${T+(rand([1,-1]))*(rand([10,20]))>0?T+10:T+20} N</b>이다.`
+    )
+  ];
+
+  selected=new Set(); answered=false; hintOpen=false;
+  updateDia(); renderOpts();
+  document.getElementById('feedbackBox').className='feedback';
+  document.getElementById('hintBox').className='hint-box';
+  document.getElementById('hintBtn').textContent='💡 힌트 보기';
+  setHint();
+}
+
+function buildOpt(i,key,flipIdx,trueText,explain,wrongTextFn){
+  const isCorrect=!flipIdx.has(i);
+  return {key, isCorrect, text:isCorrect?trueText:wrongTextFn(), explain};
+}
+
+/* ── Diagram update ── */
+function updateDia(){
+  const PIVOT_X=75;
+  const MAX_W=265; // max rod width in px
+  const ppm=MAX_W/d2;
+  const wx=PIVOT_X+d1*ppm;
+  const tx=PIVOT_X+d2*ppm;
+  const rodW=d2*ppm;
+
+  // rod
+  document.getElementById('rod').setAttribute('width',rodW);
+  document.getElementById('rodSheen').setAttribute('width',rodW);
+
+  // grain lines
+  const grains=['gA','gB','gC','gD','gE'];
+  const step=rodW/6;
+  grains.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    const gx=PIVOT_X+(i+1)*step;
+    el.setAttribute('x1',gx);el.setAttribute('x2',gx);
+    el.style.display=(gx<PIVOT_X+rodW&&gx>PIVOT_X)?'':'none';
+  });
+
+  // weight group
+  const cx=wx; // center x of weight
+  document.getElementById('wRope').setAttribute('x',cx-2);
+  document.getElementById('wBody').setAttribute('x',cx-20);
+  document.getElementById('wLid').setAttribute('x',cx-18);
+  document.getElementById('wLidSheen').setAttribute('x',cx-18);
+  document.getElementById('wRim').setAttribute('x',cx-20);
+  document.getElementById('wLock').setAttribute('x',cx-5);
+  document.getElementById('wLockHole').setAttribute('x',cx-2);
+  document.getElementById('wTag').setAttribute('x',cx-25);
+  document.getElementById('wText').setAttribute('x',cx);
+  document.getElementById('wText').textContent=W+' N';
+
+  // thread
+  document.getElementById('thread').setAttribute('x1',tx);
+  document.getElementById('thread').setAttribute('x2',tx);
+  document.getElementById('tTop').setAttribute('x',tx-5);
+  document.getElementById('tBot').setAttribute('cx',tx);
+
+  // d1 arrow
+  const d1m=(PIVOT_X+2+cx)/2;
+  const d1line=document.querySelector('#d1Grp line');
+  d1line.setAttribute('x1',PIVOT_X+2);d1line.setAttribute('x2',cx-2);
+  const d1rect=document.querySelector('#d1Grp rect');
+  d1rect.setAttribute('x',d1m-24);
+  document.getElementById('d1Txt').setAttribute('x',d1m);
+  document.getElementById('d1Txt').textContent=`${d1} m`;
+
+  // d2 arrow
+  const d2m=(PIVOT_X+2+tx)/2;
+  const d2line=document.querySelector('#d2Grp line');
+  d2line.setAttribute('x1',PIVOT_X+2);d2line.setAttribute('x2',tx-2);
+  document.getElementById('d2Rect').setAttribute('x',d2m-28);
+  document.getElementById('d2Txt').setAttribute('x',d2m);
+  document.getElementById('d2Txt').textContent=`${d2} m`;
+
+  // chips
+  document.getElementById('cvW').textContent=W;
+  document.getElementById('cvD1').textContent=d1;
+  document.getElementById('cvD2').textContent=d2;
+}
+
+function renderOpts(){
+  const list=document.getElementById('optList');
+  list.innerHTML='';
+  opts.forEach(o=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn'; btn.dataset.key=o.key;
+    btn.innerHTML=`<span class="opt-badge">${o.key}</span><span>${o.text}</span>`;
+    btn.onclick=()=>pick(o.key);
+    list.appendChild(btn);
+  });
+}
+
+function pick(key){
+  if(answered)return;
+  selected.has(key)?selected.delete(key):selected.add(key);
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.toggle('sel',selected.has(b.dataset.key));
+  });
+}
+
+function setHint(){
+  document.getElementById('hintBox').innerHTML=
+    `📐 돌림힘(τ) = 힘(F) × 팔의 길이(r)<br>
+     ⚖️ 막대가 평형이면:<br>
+     &nbsp;&nbsp;시계 방향 돌림힘 = 반시계 방향 돌림힘<br>
+     &nbsp;&nbsp;<b>W × d₁ = T × d₂</b><br>
+     🔑 T = W×d₁ ÷ d₂ 로 실의 장력을 구해봐!`;
+}
+
+function toggleHint(){
+  hintOpen=!hintOpen;
+  document.getElementById('hintBox').className='hint-content'+(hintOpen?' open':'');
+  document.getElementById('hintBtn').textContent=hintOpen?'💡 힌트 닫기':'💡 힌트 보기';
+}
+
+function checkAnswer(){
+  if(answered)return;
+  if(selected.size===0){toast('선지를 먼저 선택해봐! 🐷');return;}
+  answered=true; total++;
+  const corrKeys=new Set(opts.filter(o=>o.isCorrect).map(o=>o.key));
+  const ok=[...selected].every(k=>corrKeys.has(k))&&selected.size===corrKeys.size;
+  if(ok)score++;
+  updateXP();
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    const k=b.dataset.key;
+    const o=opts.find(x=>x.key===k);
+    b.classList.remove('sel');
+    if(o.isCorrect)b.classList.add('ok');
+    else if(selected.has(k))b.classList.add('ng');
+  });
+  showFeedback(ok,corrKeys);
+  setTimeout(()=>document.getElementById('feedbackBox').scrollIntoView({behavior:'smooth',block:'nearest'}),150);
+}
+
+function showFeedback(ok,corrKeys){
+  const box=document.getElementById('feedbackBox');
+  box.className='feedback show '+(ok?'fb-ok':'fb-ng');
+  document.getElementById('fbHead').textContent=ok?'🎉 정답! 완벽해요!':'💀 아쉬워요, 다시 도전!';
+
+  // 반응 몹
+  const rr=document.getElementById('reactRow');
+  const mobList=ok?['cow','sheep','pig']:['zombie','creeper'];
+  rr.innerHTML=mobList.map(m=>makeMobSVG(m,48)).join('');
+
+  const ck=[...corrKeys].join(', ');
+  let html=`<div class="fb-step">정답: <b class="hl">${ck}</b> &nbsp;|&nbsp; 내 선택: <b class="hl2">${[...selected].join(', ')||'없음'}</b></div>`;
+  opts.forEach(o=>{
+    html+=`<div class="fb-step"><b>${o.key}) ${o.isCorrect?'✅ 옳음':'❌ 틀림'}</b><br>${o.explain}</div>`;
+  });
+  html+=`<div class="fb-step">⚖️ <b>핵심 공식 총정리</b><br>W × d₁ = T × d₂<br>${W} × ${d1} = T × ${d2}<br>→ T = <b class="hl">${T} N</b></div>`;
+  document.getElementById('fbBody').innerHTML=html;
+}
+
+function updateXP(){
+  const p=total?score/total*100:0;
+  document.getElementById('xpFill').style.width=p+'%';
+  document.getElementById('xpNum').textContent=`${score} / ${total}`;
+}
+
+function newProblem(){gen();window.scrollTo({top:0,behavior:'smooth'});}
+
+function toast(msg){
+  const t=document.createElement('div');
+  t.textContent=msg;
+  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#FFEE58;color:#3E2723;font-family:Jua,sans-serif;font-size:15px;padding:10px 22px;border-radius:8px;border:2px solid #F9A825;z-index:9999;box-shadow:0 4px 0 #E65100;white-space:nowrap;';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),1800);
+}
+
+/* ── Sky clouds ── */
+function makeClouds(){
+  const bg=document.getElementById('skyBg');
+  for(let i=0;i<5;i++){
+    const c=document.createElement('div');
+    c.className='cloud';
+    const w=55+Math.random()*80, h=18+Math.random()*18;
+    const top=8+Math.random()*15;
+    const dur=22+Math.random()*20;
+    const delay=-Math.random()*dur;
+    c.style.cssText=`width:${w}px;height:${h}px;top:${top}%;border-radius:5px;animation-duration:${dur}s;animation-delay:${delay}s;`;
+    bg.appendChild(c);
+  }
+}
+
+/* ── Mob parade ── */
+function buildParade(){
+  const row=document.getElementById('mobRow');
+  ['cow','pig','sheep','creeper','zombie'].forEach((k,i)=>{
+    const wrap=document.createElement('div');
+    wrap.style.cssText=`animation:boing .85s ease-in-out infinite alternate;animation-delay:${i*0.12}s;`;
+    wrap.innerHTML=makeMobSVG(k,48);
+    row.appendChild(wrap);
+  });
+}
+
+/* ── init ── */
+makeClouds();
+buildParade();
+gen();
+</script>
+</body>
+</html>

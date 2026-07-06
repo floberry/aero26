@@ -1,474 +1,1061 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>에너지 효율 문제 연습</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PRODUCE PHYSICS 101</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=swap');
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+:root {
+  --blue: #1A5FFF;
+  --deep-blue: #0A3FCC;
+  --light-blue: #E8EFFF;
+  --bg: #F4F6FF;
+  --white: #FFFFFF;
+  --text: #1A1A2E;
+  --text2: #555577;
+  --border: #D0D8F0;
+  --gold: #F5A623;
+  --green: #22C55E;
+  --red: #EF4444;
+  --pink: #FF6B9D;
+}
 
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 800px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-        .problem-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            border-left: 5px solid #667eea;
-        }
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(26,95,255,0.08) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(26,95,255,0.04) 39px, rgba(26,95,255,0.04) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(26,95,255,0.04) 39px, rgba(26,95,255,0.04) 40px);
+  pointer-events: none;
+  z-index: 0;
+}
 
-        .problem-title {
-            font-size: 20px;
-            color: #667eea;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
+/* ── SELECT SCREEN ── */
+#selectScreen {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 16px 40px;
+}
 
-        .problem-content {
-            line-height: 1.8;
-            color: #333;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
+#selectScreen::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(26,95,255,0.1) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(26,95,255,0.04) 39px, rgba(26,95,255,0.04) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(26,95,255,0.04) 39px, rgba(26,95,255,0.04) 40px);
+  pointer-events: none;
+  z-index: 0;
+}
 
-        .highlight {
-            background: #fff3cd;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: bold;
-        }
+.select-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+}
 
-        .diagram {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
-        }
+.select-header {
+  text-align: center;
+  padding: 24px 0 16px;
+}
 
-        .diagram-content {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
+.select-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
 
-        .energy-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            min-width: 150px;
-            text-align: center;
-        }
+.select-title {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 22px;
+  background: linear-gradient(135deg, var(--blue), #7B9FFF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+}
 
-        .energy-label {
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
+.select-subtitle {
+  font-size: 12px;
+  color: var(--text2);
+  letter-spacing: 1.5px;
+}
 
-        .energy-value {
-            font-size: 24px;
-            font-weight: bold;
-        }
+.select-instruction {
+  text-align: center;
+  margin: 12px 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue);
+  background: var(--light-blue);
+  border-radius: 20px;
+  padding: 8px 16px;
+}
 
-        .arrow {
-            font-size: 40px;
-            color: #667eea;
-        }
+.cand-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-bottom: 18px;
+}
 
-        .answer-section {
-            margin: 25px 0;
-        }
+.cand-card {
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 6px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  -webkit-user-select: none;
+  user-select: none;
+}
 
-        .answer-input {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
+.cand-card:active { transform: scale(0.95); }
 
-        input[type="number"] {
-            padding: 12px 20px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 18px;
-            width: 150px;
-            transition: all 0.3s;
-        }
+.cand-card.selected {
+  border-color: var(--pink);
+  background: #FFF0F6;
+  box-shadow: 0 4px 18px rgba(255,107,157,0.25);
+  transform: translateY(-2px);
+}
 
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
+.cand-card.selected::after {
+  content: '✓';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 22px;
+  height: 22px;
+  background: var(--pink);
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 22px;
+}
 
-        .unit {
-            font-weight: bold;
-            color: #666;
-        }
+.cand-emoji-big { font-size: 28px; margin-bottom: 6px; }
 
-        .button-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 25px;
-            flex-wrap: wrap;
-        }
+.cand-name-sm {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.3;
+}
 
-        button {
-            padding: 15px 40px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
+.cand-card.selected .cand-name-sm { color: #C2185B; }
 
-        .check-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
+.teacher-card {
+  background: linear-gradient(135deg, #1A1A2E, #2C2C4E);
+  border: 2px solid #4A4AFF;
+  border-radius: 16px;
+  padding: 14px 6px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
 
-        .check-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
+.teacher-card .cand-name-sm { color: rgba(255,255,255,0.9); }
+.teacher-card.selected { border-color: #FFD700; box-shadow: 0 4px 18px rgba(255,215,0,0.3); }
+.teacher-card.selected::after {
+  content: '✓';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 22px;
+  height: 22px;
+  background: #FFD700;
+  color: #1A1A2E;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 22px;
+}
 
-        .new-btn {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
+.btn-start {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 18px;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--pink), #FF2D7A);
+  color: white;
+  box-shadow: 0 6px 20px rgba(255,107,157,0.4);
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
 
-        .new-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
-        }
+.btn-start:disabled {
+  background: var(--border);
+  color: var(--text2);
+  box-shadow: none;
+  cursor: default;
+}
 
-        .result {
-            margin-top: 25px;
-            padding: 20px;
-            border-radius: 10px;
-            display: none;
-            animation: slideDown 0.5s ease;
-        }
+.btn-start:not(:disabled):active { transform: scale(0.97); }
 
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+/* ── MAIN GAME SCREEN ── */
+#gameScreen { display: none; position: relative; z-index: 1; }
 
-        .result.correct {
-            background: #d4edda;
-            border: 2px solid #28a745;
-            display: block;
-        }
+.container {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 0 14px 80px;
+}
 
-        .result.incorrect {
-            background: #f8d7da;
-            border: 2px solid #dc3545;
-            display: block;
-        }
+.header {
+  text-align: center;
+  padding: 18px 0 10px;
+}
 
-        .result-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
+.brand-physics {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 22px;
+  background: linear-gradient(135deg, var(--blue), #7B9FFF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 2px;
+  margin-bottom: 2px;
+}
 
-        .result.correct .result-title {
-            color: #28a745;
-        }
+.brand-sub {
+  font-size: 11px;
+  color: var(--text2);
+  letter-spacing: 2px;
+}
 
-        .result.incorrect .result-title {
-            color: #dc3545;
-        }
+/* Selected char badge */
+.selected-char-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 10px rgba(26,95,255,0.05);
+}
 
-        .solution {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
+.sel-emoji { font-size: 22px; }
+.sel-name { font-family: 'Black Han Sans', sans-serif; font-size: 15px; color: var(--blue); }
+.sel-sub { font-size: 10px; color: var(--text2); margin-top: 1px; }
+.sel-change {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--pink);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 10px;
+  border: 1.5px solid var(--pink);
+  border-radius: 20px;
+  background: #FFF0F6;
+}
 
-        .solution-title {
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 18px;
-        }
+/* score bar */
+.debut-meter {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 12px rgba(26,95,255,0.06);
+}
 
-        .solution-step {
-            margin: 10px 0;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 5px;
-            line-height: 1.8;
-        }
+.debut-icon { font-size: 26px; flex-shrink: 0; }
+.debut-info { flex: 1; }
+.debut-label { font-size: 10px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
 
-        .formula {
-            background: #fff3cd;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            font-family: 'Courier New', monospace;
-            text-align: center;
-            font-weight: bold;
-        }
+.debut-bar-wrap { background: var(--light-blue); border-radius: 99px; height: 9px; overflow: hidden; position: relative; }
+.debut-bar { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--blue), #7B9FFF); transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1); width: 0%; }
+.penalty-flash { animation: flashRed 0.5s ease; }
+@keyframes flashRed {
+  0%,100% { background: linear-gradient(90deg, var(--blue), #7B9FFF); }
+  50% { background: linear-gradient(90deg, var(--red), #FF8888); }
+}
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
+.debut-score { font-family: 'Black Han Sans', sans-serif; font-size: 20px; color: var(--blue); flex-shrink: 0; }
+.debut-score.negative { color: var(--red); animation: shakeScore 0.4s ease; }
+@keyframes shakeScore {
+  0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)}
+}
 
-            h1 {
-                font-size: 24px;
-            }
+.penalty-tag {
+  display: none;
+  position: absolute;
+  top: -18px;
+  right: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--red);
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 20px;
+  padding: 2px 8px;
+  animation: floatUp 1.2s ease forwards;
+}
 
-            .problem-content {
-                font-size: 14px;
-            }
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
 
-            .button-group {
-                flex-direction: column;
-            }
+/* q-type nav */
+.q-type-nav { display: flex; gap: 6px; margin: 0 0 12px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 2px; }
+.q-type-nav::-webkit-scrollbar { display: none; }
+.q-tab { flex-shrink: 0; padding: 7px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--white); color: var(--text2); font-size: 12px; font-family: 'Noto Sans KR', sans-serif; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.q-tab.active { background: var(--blue); border-color: var(--blue); color: white; box-shadow: 0 3px 10px rgba(26,95,255,0.25); }
 
-            button {
-                width: 100%;
-            }
-        }
-    </style>
+/* main card */
+.main-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(26,95,255,0.08); margin-bottom: 14px; }
+
+.cand-header { background: linear-gradient(135deg, var(--blue) 0%, #4A80FF 100%); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+.cand-avatar { width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.cand-info { flex: 1; }
+.cand-name { font-family: 'Black Han Sans', sans-serif; font-size: 18px; color: white; margin-bottom: 2px; }
+.cand-ep { font-size: 11px; color: rgba(255,255,255,0.75); font-weight: 700; letter-spacing: 0.5px; }
+.rank-badge { background: var(--gold); color: white; font-family: 'Black Han Sans', sans-serif; font-size: 15px; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(245,166,35,0.4); flex-shrink: 0; }
+
+.diagram-section { padding: 12px 14px 8px; border-bottom: 1.5px solid var(--border); background: #FAFBFF; }
+.section-label { font-size: 10px; font-weight: 900; color: var(--blue); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+.ruler-container { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 12px 10px 8px; }
+.ruler-svg { width: 100%; height: auto; display: block; }
+
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 14px; border-bottom: 1.5px solid var(--border); background: #FAFBFF; }
+.info-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 9px; text-align: center; }
+.info-card .label { font-size: 9px; font-weight: 900; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+.info-card .value { font-family: 'Black Han Sans', sans-serif; font-size: 15px; color: var(--blue); }
+
+.problem-section { padding: 14px; border-bottom: 1.5px solid var(--border); }
+.mission-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--blue); color: white; font-size: 10px; font-weight: 900; letter-spacing: 1px; padding: 4px 10px; border-radius: 20px; margin-bottom: 10px; text-transform: uppercase; }
+.question-text { font-size: 15px; line-height: 1.75; color: var(--text); font-weight: 500; }
+.question-text strong { color: var(--blue); font-weight: 900; }
+
+.answer-section { padding: 14px; }
+.answer-label { font-size: 10px; font-weight: 900; color: var(--text2); text-transform: uppercase; letter-spacing: 2px; text-align: center; margin-bottom: 10px; }
+
+.choices { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.choice-btn { display: flex; align-items: center; gap: 10px; background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: all 0.18s; text-align: left; color: var(--text); font-size: 14px; font-weight: 500; font-family: 'Noto Sans KR', sans-serif; width: 100%; }
+.choice-btn:active { transform: scale(0.98); }
+.choice-btn.selected { border-color: var(--blue); background: var(--light-blue); color: var(--blue); }
+.choice-btn.correct { border-color: var(--green); background: #F0FDF4; color: #166534; }
+.choice-btn.wrong { border-color: var(--red); background: #FEF2F2; color: #991B1B; }
+.choice-num { width: 26px; height: 26px; border-radius: 50%; background: var(--light-blue); color: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; flex-shrink: 0; transition: all 0.18s; }
+.choice-btn.selected .choice-num { background: var(--blue); color: white; }
+.choice-btn.correct .choice-num { background: var(--green); color: white; }
+.choice-btn.wrong .choice-num { background: var(--red); color: white; }
+
+.btn-row { display: flex; gap: 8px; margin-top: 2px; }
+.btn-check { flex: 1; padding: 14px; border-radius: 12px; border: none; font-family: 'Black Han Sans', sans-serif; font-size: 15px; cursor: pointer; background: linear-gradient(135deg, var(--blue), var(--deep-blue)); color: white; box-shadow: 0 4px 14px rgba(26,95,255,0.3); transition: all 0.18s; }
+.btn-check:active { transform: scale(0.97); }
+.btn-new { flex: 1; padding: 14px; border-radius: 12px; border: 1.5px solid var(--border); font-family: 'Black Han Sans', sans-serif; font-size: 15px; cursor: pointer; background: var(--white); color: var(--text2); transition: all 0.18s; }
+.btn-new:active { transform: scale(0.97); background: var(--light-blue); }
+
+.feedback-box { margin-top: 12px; border-radius: 12px; padding: 14px; display: none; }
+.feedback-box.show { display: block; }
+.feedback-box.correct-fb { background: #F0FDF4; border: 1.5px solid #BBF7D0; }
+.feedback-box.wrong-fb { background: #FEF2F2; border: 1.5px solid #FECACA; }
+.feedback-title { font-family: 'Black Han Sans', sans-serif; font-size: 15px; margin-bottom: 8px; }
+.feedback-box.correct-fb .feedback-title { color: #166534; }
+.feedback-box.wrong-fb .feedback-title { color: #991B1B; }
+.feedback-text { font-size: 13px; line-height: 1.85; color: var(--text); }
+.formula { display: inline-block; background: rgba(26,95,255,0.08); border: 1px solid rgba(26,95,255,0.15); border-radius: 5px; padding: 1px 7px; font-weight: 900; color: var(--blue); font-size: 13px; }
+
+.concept-box { background: var(--light-blue); border: 1.5px solid #C7D6FF; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; font-size: 12.5px; line-height: 1.7; color: var(--text2); }
+.concept-box b { color: var(--deep-blue); }
+.step-line { display: flex; align-items: flex-start; gap: 7px; margin: 7px 0; font-size: 13px; line-height: 1.6; }
+.step-num { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; background: var(--blue); color: #fff; border-radius: 50%; font-size: 10.5px; font-weight: 900; margin-top: 1px; }
+.step-result { margin-top: 4px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 13.5px; }
+
+/* MODAL */
+.debut-modal { display: none; position: fixed; inset: 0; z-index: 300; align-items: center; justify-content: center; background: rgba(26,95,255,0.15); backdrop-filter: blur(8px); }
+.debut-modal.show { display: flex; }
+.debut-modal-inner { background: var(--white); border: 2px solid var(--border); border-radius: 24px; padding: 32px 24px; text-align: center; max-width: 320px; width: 88%; animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 20px 60px rgba(26,95,255,0.2); }
+@keyframes popIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-emoji { font-size: 60px; margin-bottom: 10px; }
+.modal-title { font-family: 'Black Han Sans', sans-serif; font-size: 26px; margin-bottom: 8px; }
+.modal-title.success { color: var(--blue); }
+.modal-title.fail { color: var(--red); }
+.modal-desc { font-size: 14px; color: var(--text2); line-height: 1.65; margin-bottom: 20px; }
+.btn-modal { width: 100%; padding: 14px; border-radius: 12px; border: none; font-family: 'Black Han Sans', sans-serif; font-size: 16px; cursor: pointer; background: linear-gradient(135deg, var(--blue), var(--deep-blue)); color: white; box-shadow: 0 4px 14px rgba(26,95,255,0.3); margin-bottom: 10px; }
+.btn-modal-sec { width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border); font-family: 'Black Han Sans', sans-serif; font-size: 14px; cursor: pointer; background: var(--white); color: var(--text2); }
+
+.confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 299; overflow: hidden; }
+.confetti-piece { position: absolute; top: -10px; animation: confettiFall linear forwards; }
+@keyframes confettiFall { 0% { transform: translateY(0) rotateZ(0); opacity: 1; } 100% { transform: translateY(110vh) rotateZ(720deg); opacity: 0; } }
+
+.footer-note { text-align: center; font-size: 10px; color: #AABBDD; padding-bottom: 16px; letter-spacing: 1px; }
+
+/* penalty score popup */
+.score-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--red);
+  color: white;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 28px;
+  padding: 16px 32px;
+  border-radius: 20px;
+  z-index: 500;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: 0 8px 30px rgba(239,68,68,0.4);
+}
+.score-popup.correct-popup { background: var(--blue); box-shadow: 0 8px 30px rgba(26,95,255,0.4); }
+.score-popup.show { animation: popScore 1.2s ease forwards; }
+@keyframes popScore {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  40% { transform: translate(-50%, -50%) scale(1); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -70%) scale(0.9); }
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>⚡ 에너지 효율 문제 연습</h1>
-        
-        <div class="problem-section">
-            <div class="problem-title">문제 3</div>
-            <div class="problem-content" id="problemText"></div>
-            
-            <div class="diagram">
-                <div class="diagram-content" id="diagramContent"></div>
-            </div>
-        </div>
 
-        <div class="answer-section">
-            <div class="answer-input">
-                <label style="font-weight: bold;">에너지 효율:</label>
-                <input type="number" id="answerInput" placeholder="답 입력" step="0.1">
-                <span class="unit">%</span>
-            </div>
-        </div>
+<div class="confetti-wrap" id="confettiWrap"></div>
+<div class="score-popup" id="scorePopup"></div>
 
-        <div class="button-group">
-            <button class="check-btn" onclick="checkAnswer()">✓ 정답 확인</button>
-            <button class="new-btn" onclick="generateNewProblem()">🔄 새 문제</button>
-        </div>
-
-        <div class="result" id="result"></div>
+<!-- ── CHARACTER SELECT SCREEN ── -->
+<div id="selectScreen">
+  <div class="select-inner">
+    <div class="select-header">
+      <div class="select-logo">
+        <svg width="72" viewBox="0 0 120 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="60,4 116,104 4,104" stroke="#1A5FFF" stroke-width="5" fill="none" stroke-linejoin="round"/>
+          <polygon points="60,20 100,92 20,92" stroke="#1A5FFF" stroke-width="3" fill="none" stroke-linejoin="round"/>
+          <path d="M51,30 L55,22 L60,28 L65,22 L69,30" stroke="#1A5FFF" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
+          <circle cx="51" cy="30" r="2" fill="#1A5FFF"/>
+          <circle cx="60" cy="29" r="2" fill="#1A5FFF"/>
+          <circle cx="69" cy="30" r="2" fill="#1A5FFF"/>
+          <text x="60" y="58" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="11" font-weight="900" fill="#1A5FFF" letter-spacing="3">PRODUCE</text>
+          <text x="60" y="82" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="24" font-weight="900" fill="#1A5FFF">101</text>
+        </svg>
+      </div>
+      <div class="select-title">PRODUCE PHYSICS 101</div>
+      <div class="select-subtitle">돌림힘 마스터 · 캐릭터 선택</div>
     </div>
 
-    <script>
-        let currentProblem = {};
+    <div class="select-instruction">✨ 나의 캐릭터를 선택하세요!</div>
 
-        // 문제 생성 함수
-        function generateNewProblem() {
-            // 공급 에너지: 1000~5000 J (100 단위)
-            const inputEnergy = Math.floor(Math.random() * 41 + 10) * 100;
-            
-            // 효율: 60~95% (5% 단위)
-            const efficiency = (Math.floor(Math.random() * 8) + 12) * 5;
-            
-            // 유용한 에너지 계산
-            const usefulEnergy = Math.round(inputEnergy * efficiency / 100);
-            
-            // 손실 에너지 계산
-            const wastedEnergy = inputEnergy - usefulEnergy;
-            
-            currentProblem = {
-                inputEnergy,
-                efficiency,
-                usefulEnergy,
-                wastedEnergy
-            };
+    <div class="cand-grid" id="candGrid"></div>
 
-            displayProblem();
-            document.getElementById('answerInput').value = '';
-            document.getElementById('result').style.display = 'none';
-        }
+    <button class="btn-start" id="btnStart" onclick="startGame()" disabled>
+      🎤 연습 시작하기
+    </button>
+  </div>
+</div>
 
-        // 문제 표시 함수
-        function displayProblem() {
-            const { inputEnergy, usefulEnergy, wastedEnergy } = currentProblem;
-            
-            document.getElementById('problemText').innerHTML = `
-                어떤 기계에 <span class="highlight">${inputEnergy.toLocaleString()} J</span>의 에너지를 공급했더니 
-                <span class="highlight">${usefulEnergy.toLocaleString()} J</span>의 유용한 에너지를 얻었고, 
-                나머지 <span class="highlight">${wastedEnergy.toLocaleString()} J</span>은 열에너지로 손실되었다.<br><br>
-                이 기계의 에너지 효율은 몇 %인가?
-            `;
+<!-- ── GAME SCREEN ── -->
+<div id="gameScreen">
 
-            document.getElementById('diagramContent').innerHTML = `
-                <div class="energy-box">
-                    <div class="energy-label">공급 에너지</div>
-                    <div class="energy-value">${inputEnergy.toLocaleString()} J</div>
-                </div>
-                <div class="arrow">→</div>
-                <div>
-                    <div class="energy-box" style="margin-bottom: 10px;">
-                        <div class="energy-label">유용한 에너지</div>
-                        <div class="energy-value">${usefulEnergy.toLocaleString()} J</div>
-                    </div>
-                    <div class="energy-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                        <div class="energy-label">손실 에너지</div>
-                        <div class="energy-value">${wastedEnergy.toLocaleString()} J</div>
-                    </div>
-                </div>
-            `;
-        }
+<div class="debut-modal" id="debutModal">
+  <div class="debut-modal-inner">
+    <div class="modal-emoji" id="modalEmoji">⭐</div>
+    <div class="modal-title" id="modalTitle">데뷔 확정!</div>
+    <div class="modal-desc" id="modalDesc"></div>
+    <button class="btn-modal" onclick="closeModal()">다시 도전하기 🎤</button>
+    <button class="btn-modal-sec" onclick="goSelect()">캐릭터 바꾸기 🔄</button>
+  </div>
+</div>
 
-        // 정답 확인 함수
-        function checkAnswer() {
-            const userAnswer = parseFloat(document.getElementById('answerInput').value);
-            const correctAnswer = currentProblem.efficiency;
-            const { inputEnergy, usefulEnergy, wastedEnergy } = currentProblem;
-            
-            if (isNaN(userAnswer)) {
-                alert('답을 입력해주세요!');
-                return;
-            }
+<div class="container">
+  <div class="header">
+    <div class="brand-physics">돌림힘 마스터</div>
+    <div class="brand-sub">PHYSICS · 2015 REVISED CURRICULUM</div>
+  </div>
 
-            const resultDiv = document.getElementById('result');
-            const tolerance = 0.1; // 오차 허용 범위
-            
-            if (Math.abs(userAnswer - correctAnswer) <= tolerance) {
-                resultDiv.className = 'result correct';
-                resultDiv.innerHTML = `
-                    <div class="result-title">🎉 정답입니다!</div>
-                    <div style="font-size: 18px; margin: 10px 0;">
-                        정답: <strong>${correctAnswer}%</strong> (입력값: ${userAnswer}%)
-                    </div>
-                    <div class="solution">
-                        <div class="solution-title">📝 풀이 과정</div>
-                        
-                        <div class="solution-step">
-                            <strong>1단계: 에너지 효율 공식</strong><br>
-                            에너지 효율 = (유용한 에너지 / 공급한 에너지) × 100%
-                        </div>
-                        
-                        <div class="formula">
-                            효율 = (${usefulEnergy.toLocaleString()} J / ${inputEnergy.toLocaleString()} J) × 100%
-                        </div>
-                        
-                        <div class="solution-step">
-                            <strong>2단계: 계산</strong><br>
-                            효율 = ${(usefulEnergy / inputEnergy).toFixed(4)} × 100%<br>
-                            효율 = <strong>${correctAnswer}%</strong>
-                        </div>
-                        
-                        <div class="solution-step">
-                            <strong>💡 핵심 개념</strong><br>
-                            • 에너지 효율은 입력 에너지 중 얼마나 유용하게 사용되었는지를 나타냅니다.<br>
-                            • 효율이 높을수록 에너지 손실이 적습니다.<br>
-                            • 공급 에너지 = 유용한 에너지 + 손실 에너지 (${inputEnergy.toLocaleString()} = ${usefulEnergy.toLocaleString()} + ${wastedEnergy.toLocaleString()})
-                        </div>
-                    </div>
-                `;
-            } else {
-                resultDiv.className = 'result incorrect';
-                resultDiv.innerHTML = `
-                    <div class="result-title">❌ 틀렸습니다</div>
-                    <div style="font-size: 18px; margin: 10px 0;">
-                        정답: <strong>${correctAnswer}%</strong><br>
-                        입력값: ${userAnswer}%
-                    </div>
-                    <div class="solution">
-                        <div class="solution-title">📝 풀이 과정</div>
-                        
-                        <div class="solution-step">
-                            <strong>1단계: 에너지 효율 공식</strong><br>
-                            에너지 효율 = (유용한 에너지 / 공급한 에너지) × 100%
-                        </div>
-                        
-                        <div class="formula">
-                            효율 = (${usefulEnergy.toLocaleString()} J / ${inputEnergy.toLocaleString()} J) × 100%
-                        </div>
-                        
-                        <div class="solution-step">
-                            <strong>2단계: 계산</strong><br>
-                            효율 = ${(usefulEnergy / inputEnergy).toFixed(4)} × 100%<br>
-                            효율 = <strong>${correctAnswer}%</strong>
-                        </div>
-                        
-                        <div class="solution-step" style="background: #fff3cd;">
-                            <strong>⚠️ 다시 확인해보세요!</strong><br>
-                            공급한 에너지와 유용한 에너지의 순서를 확인하세요.<br>
-                            비율을 구한 후 100을 곱하여 %로 나타냅니다.
-                        </div>
-                        
-                        <div class="solution-step">
-                            <strong>💡 핵심 개념</strong><br>
-                            • 에너지 효율 = (출력/입력) × 100%<br>
-                            • 손실 에너지 = 공급 에너지 - 유용한 에너지<br>
-                            • 효율은 항상 100% 이하입니다.
-                        </div>
-                    </div>
-                `;
-            }
-            
-            resultDiv.style.display = 'block';
-            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+  <!-- selected character bar -->
+  <div class="selected-char-bar">
+    <div class="sel-emoji" id="selEmoji">🌸</div>
+    <div>
+      <div class="sel-name" id="selName">황찌찌</div>
+      <div class="sel-sub">지금 풀고 있어요!</div>
+    </div>
+    <div class="sel-change" onclick="goSelect()">캐릭터 변경</div>
+  </div>
 
-        // 엔터키로 정답 확인
-        document.getElementById('answerInput').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                checkAnswer();
-            }
-        });
+  <!-- debut meter -->
+  <div class="debut-meter">
+    <div class="debut-icon" id="debutEmoji">🎤</div>
+    <div class="debut-info">
+      <div class="debut-label">데뷔 가능성</div>
+      <div class="debut-bar-wrap" style="position:relative;">
+        <div class="debut-bar" id="debutBar"></div>
+        <span class="penalty-tag" id="penaltyTag">-10점</span>
+      </div>
+    </div>
+    <div class="debut-score" id="debutScore">0점</div>
+  </div>
 
-        // 페이지 로드 시 첫 문제 생성
-        window.onload = function() {
-            generateNewProblem();
-        };
-    </script>
+  <!-- q type: 랜덤 자동 선택 -->
+
+  <!-- main card -->
+  <div class="main-card">
+    <div class="cand-header">
+      <div class="cand-avatar" id="candAvatar">🎵</div>
+      <div class="cand-info">
+        <div class="cand-name" id="candName">황찌찌</div>
+        <div class="cand-ep" id="candEp">Episode 1 · 돌림힘 크기</div>
+      </div>
+      <div class="rank-badge" id="rankBadge">1</div>
+    </div>
+
+    <div class="diagram-section">
+      <div class="section-label">📐 실험 장치</div>
+      <div class="ruler-container">
+        <svg class="ruler-svg" viewBox="0 0 320 120" id="rulerSvg" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="52" width="300" height="14" rx="3" fill="#D4A96A" opacity="0.85"/>
+          <rect x="10" y="52" width="300" height="4" rx="2" fill="#C89858" opacity="0.5"/>
+          <g fill="#555577" font-size="7" text-anchor="middle" font-family="sans-serif">
+            <text x="10" y="47">0</text><line x1="10" y1="49" x2="10" y2="52" stroke="#888" stroke-width="1"/>
+            <text x="40" y="47">10</text><line x1="40" y1="49" x2="40" y2="52" stroke="#888" stroke-width="1"/>
+            <text x="70" y="47">20</text><line x1="70" y1="49" x2="70" y2="52" stroke="#888" stroke-width="1"/>
+            <text x="100" y="47">30</text><line x1="100" y1="49" x2="100" y2="52" stroke="#888" stroke-width="1"/>
+            <text x="130" y="47">40</text><line x1="130" y1="49" x2="130" y2="52" stroke="#888" stroke-width="1"/>
+            <text x="160" y="47">50</text><line x1="160" y1="49" x2="160" y2="52" stroke="#888" stroke-width="1"/>
+            <text x="190" y="47">60</text><line x1="190" y1="49" x2="190" y2="52" stroke="#888" stroke-width="1"/>
+            <text x="220" y="47">70</text><line x1="220" y1="49" x2="220" y2="52" stroke="#888" stroke-width="1"/>
+            <text x="250" y="47">80</text><line x1="250" y1="49" x2="250" y2="52" stroke="#888" stroke-width="1"/>
+            <text x="280" y="47">90</text><line x1="280" y1="49" x2="280" y2="52" stroke="#888" stroke-width="1"/>
+            <text x="310" y="47">100</text><line x1="310" y1="49" x2="310" y2="52" stroke="#888" stroke-width="1"/>
+          </g>
+          <text x="310" y="76" fill="#AABBCC" font-size="6.5" text-anchor="end" font-family="sans-serif">(cm)</text>
+
+          <!-- arm lines (dynamically updated) -->
+          <line id="armLineA" x1="100" y1="48" x2="160" y2="48" stroke="#1A5FFF" stroke-width="1.2" stroke-dasharray="4,2"/>
+          <text id="armLabelA" x="130" y="44" fill="#1A5FFF" font-size="7" text-anchor="middle" font-family="sans-serif" font-weight="bold">40cm</text>
+          <line id="armLineB" x1="160" y1="38" x2="250" y2="38" stroke="#F5A623" stroke-width="1.2" stroke-dasharray="4,2"/>
+          <text id="armLabelB" x="205" y="34" fill="#C07800" font-size="7" text-anchor="middle" font-family="sans-serif" font-weight="bold">30cm</text>
+
+          <!-- pivot -->
+          <line x1="160" y1="52" x2="160" y2="32" stroke="#1A5FFF" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <circle cx="160" cy="29" r="3.5" fill="#1A5FFF"/>
+          <text x="160" y="22" fill="#1A5FFF" font-size="7" text-anchor="middle" font-family="sans-serif" font-weight="bold">중앙(축)</text>
+
+          <!-- Object A -->
+          <line id="svgRopeA" x1="100" y1="66" x2="100" y2="78" stroke="#1A5FFF" stroke-width="1.5"/>
+          <rect id="svgBoxA" x="88" y="78" width="24" height="16" rx="3" fill="#4A80FF" opacity="0.85"/>
+          <text id="svgLabelA" x="100" y="90" fill="white" font-size="8" text-anchor="middle" font-family="sans-serif" font-weight="bold">A</text>
+          <text id="svgWeightA" x="100" y="108" fill="#1A5FFF" font-size="8" text-anchor="middle" font-family="sans-serif" font-weight="bold">? N</text>
+
+          <!-- Object B -->
+          <line id="svgRopeB" x1="250" y1="66" x2="250" y2="78" stroke="#F5A623" stroke-width="1.5"/>
+          <rect id="svgBoxB" x="238" y="78" width="24" height="16" rx="3" fill="#F5A623" opacity="0.9"/>
+          <text id="svgLabelB" x="250" y="90" fill="white" font-size="8" text-anchor="middle" font-family="sans-serif" font-weight="bold">B</text>
+          <text id="svgWeightB" x="250" y="108" fill="#C07800" font-size="8" text-anchor="middle" font-family="sans-serif" font-weight="bold">20 N</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card"><div class="label">물체 A 위치</div><div class="value" id="posA">10 cm</div></div>
+      <div class="info-card"><div class="label">물체 B 위치</div><div class="value" id="posB">80 cm</div></div>
+      <div class="info-card"><div class="label">물체 B 무게</div><div class="value" id="wB">20 N</div></div>
+      <div class="info-card"><div class="label">상태</div><div class="value" style="color:#22C55E">✓ 평형</div></div>
+    </div>
+
+    <div class="problem-section">
+      <span class="mission-badge">🎵 미션 문제</span>
+      <div class="question-text" id="questionText">물체 <strong>A</strong>에 의한 돌림힘의 크기는?</div>
+    </div>
+
+    <div class="answer-section">
+      <div class="answer-label">── 보기 선택 ──</div>
+      <div class="choices" id="choicesList"></div>
+      <div class="btn-row">
+        <button class="btn-check" onclick="checkAnswer()">✅ 정답 확인</button>
+        <button class="btn-new" onclick="newQuestion()">🔀 새문제</button>
+      </div>
+      <div class="feedback-box" id="feedbackBox">
+        <div class="feedback-title" id="feedbackTitle"></div>
+        <div class="feedback-text" id="feedbackText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">물리학2 · 2015개정 교육과정 · 돌림힘과 평형</div>
+</div>
+</div><!-- /gameScreen -->
+
+<script>
+// ── CANDIDATES ──
+const ALL_CANDIDATES = [
+  { name: '황찌찌',   emoji: '🌸' },
+  { name: '임다인',   emoji: '💫' },
+  { name: '김태희',   emoji: '⭐' },
+  { name: '김은서',   emoji: '🦋' },
+  { name: '배예윤',   emoji: '🌙' },
+  { name: '김재희',   emoji: '🎀' },
+  { name: '채보경',   emoji: '🍀' },
+  { name: '김아연',   emoji: '🌺' },
+  { name: '김지영',   emoji: '🎵' },
+  { name: '길다빈',   emoji: '✨' },
+  { name: '김유림',   emoji: '🌼' },
+  { name: '이아진똥',   emoji: '💎' },
+  { name: '이아림',   emoji: '🎶' },
+  { name: '양호경',   emoji: '🌈' },
+  { name: '노승민쌤🤍', emoji: '👑', isTeacher: true },
+];
+
+const eps = ['돌림힘 크기', '돌림힘 방향', '물체 무게'];
+
+let selectedCandIdx = -1;
+let currentQType = 0;
+let score = 0;
+let currentProblem = {};
+let answered = false;
+let selectedChoice = null;
+let questionCount = 0;
+
+// ── BUILD SELECT SCREEN ──
+function buildSelectScreen() {
+  const grid = document.getElementById('candGrid');
+  grid.innerHTML = '';
+  ALL_CANDIDATES.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = c.isTeacher ? 'cand-card teacher-card' : 'cand-card';
+    div.innerHTML = `<div class="cand-emoji-big">${c.emoji}</div><div class="cand-name-sm">${c.name}</div>`;
+    div.onclick = () => selectCand(i, div);
+    grid.appendChild(div);
+  });
+}
+
+function selectCand(idx, el) {
+  selectedCandIdx = idx;
+  document.querySelectorAll('.cand-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('btnStart').disabled = false;
+}
+
+function startGame() {
+  if (selectedCandIdx < 0) return;
+  const c = ALL_CANDIDATES[selectedCandIdx];
+  document.getElementById('selEmoji').textContent = c.emoji;
+  document.getElementById('selName').textContent = c.name;
+  document.getElementById('selectScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'block';
+  score = 0;
+  questionCount = 0;
+  document.getElementById('debutBar').style.width = '0%';
+  document.getElementById('debutScore').textContent = '0점';
+  document.getElementById('debutEmoji').textContent = '🎤';
+  newQuestion();
+}
+
+function goSelect() {
+  document.getElementById('debutModal').classList.remove('show');
+  document.getElementById('gameScreen').style.display = 'none';
+  document.getElementById('selectScreen').style.display = 'flex';
+}
+
+// ── PHYSICS ──
+function round1(v) { return Math.round(v * 10) / 10; }
+
+function generateProblem(qType) {
+  const posAOpts = [10, 20, 30, 40];
+  const posBOpts = [60, 70, 80, 90];
+  const wBOpts   = [10, 15, 20, 30];
+  const posA = posAOpts[Math.floor(Math.random() * posAOpts.length)];
+  const posB = posBOpts[Math.floor(Math.random() * posBOpts.length)];
+  const wB   = wBOpts[Math.floor(Math.random() * wBOpts.length)];
+  const dA = 50 - posA;
+  const dB = posB - 50;
+  const wA = round1(wB * dB / dA);
+  const torqueA = round1(wA * dA / 100);
+  const torqueB = round1(wB * dB / 100);
+  return { posA, posB, wA, wB, dA, dB, torqueA, torqueB, qType };
+}
+
+function cmToX(cm) { return 10 + cm * 3; }
+
+function updateDiagram(p) {
+  const xA = cmToX(p.posA), xB = cmToX(p.posB), xPivot = cmToX(50);
+  document.getElementById('svgRopeA').setAttribute('x1', xA);
+  document.getElementById('svgRopeA').setAttribute('x2', xA);
+  document.getElementById('svgBoxA').setAttribute('x', xA - 12);
+  document.getElementById('svgLabelA').setAttribute('x', xA);
+  document.getElementById('svgWeightA').setAttribute('x', xA);
+  document.getElementById('svgRopeB').setAttribute('x1', xB);
+  document.getElementById('svgRopeB').setAttribute('x2', xB);
+  document.getElementById('svgBoxB').setAttribute('x', xB - 12);
+  document.getElementById('svgLabelB').setAttribute('x', xB);
+  document.getElementById('svgWeightB').setAttribute('x', xB);
+  document.getElementById('svgWeightA').textContent = (p.qType === 2) ? '? N' : p.wA + ' N';
+  document.getElementById('svgWeightB').textContent = p.wB + ' N';
+  // arm lines
+  document.getElementById('armLineA').setAttribute('x1', xA);
+  document.getElementById('armLineA').setAttribute('x2', xPivot);
+  document.getElementById('armLabelA').setAttribute('x', (xA + xPivot) / 2);
+  document.getElementById('armLabelA').textContent = p.dA + 'cm';
+  document.getElementById('armLineB').setAttribute('x1', xPivot);
+  document.getElementById('armLineB').setAttribute('x2', xB);
+  document.getElementById('armLabelB').setAttribute('x', (xPivot + xB) / 2);
+  document.getElementById('armLabelB').textContent = p.dB + 'cm';
+}
+
+function updateInfoGrid(p) {
+  document.getElementById('posA').textContent = p.posA + ' cm';
+  document.getElementById('posB').textContent = p.posB + ' cm';
+  document.getElementById('wB').textContent = p.wB + ' N';
+}
+
+// ── CHOICES ──
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function makeMagChoices(correct, p, who) {
+  const wrongs = new Set();
+  const altArm = who === 'A' ? p.dB / 100 : p.dA / 100;
+  const altW   = who === 'A' ? p.wA : p.wB;
+  wrongs.add(round1(altW * altArm));
+  wrongs.add(round1((who === 'A' ? p.wB : p.wA) * (who === 'A' ? p.dA / 100 : p.dB / 100)));
+  const arm = who === 'A' ? p.dA / 100 : p.dB / 100;
+  const w   = who === 'A' ? p.wA : p.wB;
+  wrongs.add(round1(w / (arm === 0 ? 1 : arm)));
+  let wrongArr = [...wrongs].filter(v => v !== correct && v > 0);
+  while (wrongArr.length < 3) {
+    const v = round1(correct + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 3) + 1) * 0.5);
+    if (v > 0 && v !== correct && !wrongArr.includes(v)) wrongArr.push(v);
+  }
+  wrongArr = wrongArr.slice(0, 3);
+  return shuffle([correct, ...wrongArr]).map(v => ({ label: v + ' N·m', value: v }));
+}
+
+function makeDirChoices(correct) {
+  return shuffle([
+    { label: '시계 방향 (↻)', value: '시계 방향' },
+    { label: '반시계 방향 (↺)', value: '반시계 방향' },
+    { label: '위 방향', value: '위 방향' },
+    { label: '방향이 없다', value: '방향이 없다' },
+  ]);
+}
+
+function makeWeightChoices(correct, p) {
+  const wrongs = new Set();
+  wrongs.add(round1(p.wB));
+  wrongs.add(round1(p.wA + p.wB));
+  wrongs.add(round1(p.wA * 2));
+  let wrongArr = [...wrongs].filter(v => v !== correct && v > 0);
+  while (wrongArr.length < 3) {
+    const v = round1(correct + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 4) + 1) * 5);
+    if (v > 0 && v !== correct && !wrongArr.includes(v)) wrongArr.push(v);
+  }
+  wrongArr = wrongArr.slice(0, 3);
+  return shuffle([correct, ...wrongArr]).map(v => ({ label: v + ' N', value: v }));
+}
+
+// ── QUESTION UI ──
+function setQuestionUI(p) {
+  questionCount++;
+  const c = ALL_CANDIDATES[selectedCandIdx];
+  const rotCands = ALL_CANDIDATES.filter((_, i) => i !== selectedCandIdx);
+  const displayCand = rotCands[questionCount % rotCands.length];
+
+  document.getElementById('candAvatar').textContent = c.emoji;
+  document.getElementById('candName').textContent = c.name;
+  document.getElementById('candEp').textContent = `Episode ${questionCount} · ${eps[p.qType]}`;
+  document.getElementById('rankBadge').textContent = (questionCount % 11) + 1;
+
+  const qEl = document.getElementById('questionText');
+  const listEl = document.getElementById('choicesList');
+  listEl.innerHTML = '';
+  selectedChoice = null;
+
+  let choices = [];
+
+  if (p.qType === 0) {
+    const askA = Math.random() < 0.5;
+    p._askA = askA;
+    const who = askA ? 'A' : 'B';
+    const correct = askA ? p.torqueA : p.torqueB;
+    p._answer = correct;
+    p._answerType = 'number';
+    qEl.innerHTML = `자의 중앙을 축으로 할 때, 물체 <strong>${who}</strong>에 의한 돌림힘의 크기는?`;
+    choices = makeMagChoices(correct, p, who);
+  } else if (p.qType === 1) {
+    const askA = Math.random() < 0.5;
+    p._askA = askA;
+    const who = askA ? 'A' : 'B';
+    const correct = askA ? '반시계 방향' : '시계 방향';
+    p._answer = correct;
+    p._answerType = 'string';
+    qEl.innerHTML = `물체 <strong>${who}</strong>에 의한 돌림힘의 방향은?`;
+    choices = makeDirChoices(correct);
+  } else {
+    p._answer = p.wA;
+    p._answerType = 'number';
+    qEl.innerHTML = `평형 조건을 이용하여 물체 <strong>A</strong>의 무게는?`;
+    choices = makeWeightChoices(p.wA, p);
+  }
+
+  choices.forEach((ch, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-num">${i + 1}</span>${ch.label}`;
+    btn.dataset.value = ch.value;
+    btn.onclick = () => selectChoice(btn);
+    listEl.appendChild(btn);
+  });
+}
+
+function selectChoice(btn) {
+  if (answered) return;
+  document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedChoice = btn.dataset.value;
+}
+
+// ── NEW QUESTION ──
+function newQuestion() {
+  answered = false;
+  currentQType = Math.floor(Math.random() * 3);
+  const p = generateProblem(currentQType);
+  currentProblem = p;
+  updateDiagram(p);
+  updateInfoGrid(p);
+  setQuestionUI(p);
+  hideFeedback();
+}
+
+// ── EXPLANATION BUILDER ──
+function buildExplanation(p, isCorrect) {
+  let concept = '', steps = '';
+
+  if (p.qType === 0) {
+    const who = p._askA ? 'A' : 'B';
+    const arm = p._askA ? p.dA : p.dB;
+    const w   = p._askA ? p.wA : p.wB;
+    const tau = p._askA ? p.torqueA : p.torqueB;
+
+    concept = `<div class="concept-box">💡 <b>돌림힘(torque)</b>은 물체를 <b>회전시키는 힘의 효과</b>예요.<br>` +
+      `문을 열 때 손잡이(축에서 먼 곳)를 밀면 쉽게 열리지만, 경첩 근처를 밀면 잘 안 열리죠?<br>` +
+      `→ <b>같은 힘이라도 축에서 멀수록 돌림힘이 커져요.</b> 그래서 공식은 힘과 거리를 곱해요.</div>`;
+
+    steps =
+      `<div class="step-line"><span class="step-num">1</span>돌림힘 공식은 <b>τ = F × r</b> (힘 × 축까지의 거리)예요.</div>` +
+      `<div class="step-line"><span class="step-num">2</span>물체 ${who}를 누르는 힘(무게): <span class="formula">${w} N</span></div>` +
+      `<div class="step-line"><span class="step-num">3</span>축에서 물체 ${who}까지의 거리: <span class="formula">${arm} cm</span> → m 단위로 바꾸면 <span class="formula">${(arm/100).toFixed(2)} m</span></div>` +
+      `<div class="step-line"><span class="step-num">4</span>두 값을 곱하면 돌림힘이 나와요: ${w} × ${(arm/100).toFixed(2)}</div>` +
+      `<div class="step-result">∴ τ = <span class="formula">${tau} N·m</span></div>`;
+
+  } else if (p.qType === 1) {
+    const who = p._askA ? 'A' : 'B';
+    const side = p._askA ? `왼쪽 (${p.posA}cm 지점)` : `오른쪽 (${p.posB}cm 지점)`;
+    const dir  = p._askA ? '반시계 방향 (↺)' : '시계 방향 (↻)';
+
+    concept = `<div class="concept-box">💡 <b>돌림힘의 방향</b>은 시소를 떠올리면 쉬워요.<br>` +
+      `시소 받침점(축) <b>왼쪽</b>을 아래로 누르면 시소는 <b>반시계 방향(↺)</b>으로 돌아가고,<br>` +
+      `<b>오른쪽</b>을 아래로 누르면 <b>시계 방향(↻)</b>으로 돌아가요.</div>`;
+
+    steps =
+      `<div class="step-line"><span class="step-num">1</span>먼저 물체 ${who}가 축(자의 중앙)의 어느 쪽에 있는지 확인해요.</div>` +
+      `<div class="step-line"><span class="step-num">2</span>물체 ${who}의 위치: <span class="formula">${side}</span></div>` +
+      `<div class="step-line"><span class="step-num">3</span>물체는 무게 때문에 아래로 당겨지고, 그 힘이 자를 회전시켜요.<br>왼쪽에서 아래로 당기면 반시계, 오른쪽에서 아래로 당기면 시계 방향이에요.</div>` +
+      `<div class="step-result">∴ 물체 ${who}의 돌림힘 방향: <span class="formula">${dir}</span></div>`;
+
+  } else {
+    concept = `<div class="concept-box">💡 시소가 수평으로 <b>균형(평형)</b>을 이루려면 양쪽의 돌림힘이 같아야 해요.<br>` +
+      `무게가 작아도 축에서 멀리 있으면, 무게가 커도 축에서 가까이 있는 쪽과 균형을 맞출 수 있어요.<br>` +
+      `→ 그래서 <b>평형 조건은 (무게 × 거리)가 양쪽에서 같다</b>는 뜻이에요.</div>`;
+
+    steps =
+      `<div class="step-line"><span class="step-num">1</span>평형 조건: <b>W_A × d_A = W_B × d_B</b> (양쪽 돌림힘이 같다)</div>` +
+      `<div class="step-line"><span class="step-num">2</span>알고 있는 값을 대입해요: <span class="formula">W_A × ${p.dA} = ${p.wB} × ${p.dB}</span></div>` +
+      `<div class="step-line"><span class="step-num">3</span>오른쪽을 먼저 계산해요: ${p.wB} × ${p.dB} = <span class="formula">${p.wB * p.dB}</span></div>` +
+      `<div class="step-line"><span class="step-num">4</span>양변을 ${p.dA}로 나누면 W_A를 구할 수 있어요: ${p.wB * p.dB} ÷ ${p.dA}</div>` +
+      `<div class="step-result">∴ W_A = <span class="formula">${p.wA} N</span></div>`;
+  }
+
+  // 틀렸을 때는 개념 설명을 함께 보여주고, 맞았을 때는 풀이 과정만 간단히
+  return isCorrect ? steps : (concept + steps);
+}
+
+// ── CHECK ANSWER ──
+function checkAnswer() {
+  if (answered) return;
+  if (!selectedChoice) { alert('보기를 선택해주세요!'); return; }
+
+  const p = currentProblem;
+  const correct = String(p._answer);
+  const user = selectedChoice;
+  const isCorrect = (p._answerType === 'number')
+    ? Math.abs(parseFloat(user) - parseFloat(correct)) < 0.15
+    : user === correct;
+
+  answered = true;
+
+  document.querySelectorAll('.choice-btn').forEach(btn => {
+    const v = btn.dataset.value;
+    const isAns = (p._answerType === 'number')
+      ? Math.abs(parseFloat(v) - parseFloat(correct)) < 0.15
+      : v === correct;
+    if (isAns) btn.classList.add('correct');
+    else if (btn.classList.contains('selected')) btn.classList.add('wrong');
+  });
+
+  const explanation = buildExplanation(p, isCorrect);
+
+  showFeedback(isCorrect, explanation);
+  updateScore(isCorrect);
+}
+
+// ── FEEDBACK ──
+function showFeedback(ok, explanation) {
+  const box = document.getElementById('feedbackBox');
+  box.className = 'feedback-box show ' + (ok ? 'correct-fb' : 'wrong-fb');
+  const correctMsgs = [
+    '🎤 완벽해요! 심사위원 모두가 반했어요!',
+    '💫 브라보! 국민 투표 1위 확정!',
+    '⭐ 퍼펙트! 데뷔에 한 발짝 더 가까워졌어요!',
+  ];
+  const wrongMsgs = [
+    '😢 아쉬워요... 점수가 깎였어요! 풀이를 확인하세요!',
+    '💔 틀렸어요! -10점 감점! 다시 도전해봐요!',
+    '😥 오답이에요. 점수 -10점! 아래 풀이를 참고하세요!',
+  ];
+  document.getElementById('feedbackTitle').textContent =
+    ok ? correctMsgs[Math.floor(Math.random()*3)] : wrongMsgs[Math.floor(Math.random()*3)];
+  document.getElementById('feedbackText').innerHTML = explanation;
+}
+
+function hideFeedback() {
+  document.getElementById('feedbackBox').className = 'feedback-box';
+}
+
+// ── SCORE (with penalty) ──
+function showScorePopup(text, isCorrect) {
+  const el = document.getElementById('scorePopup');
+  el.textContent = text;
+  el.className = 'score-popup ' + (isCorrect ? 'correct-popup' : '') + ' show';
+  setTimeout(() => { el.className = 'score-popup'; }, 1300);
+}
+
+function updateScore(ok) {
+  const scoreEl = document.getElementById('debutScore');
+  const barEl = document.getElementById('debutBar');
+
+  if (ok) {
+    score = Math.min(100, score + 20);
+    showScorePopup('+20점! 🎤', true);
+  } else {
+    score = Math.max(0, score - 10);
+    showScorePopup('-10점 😢', false);
+    // flash bar red
+    barEl.classList.add('penalty-flash');
+    setTimeout(() => barEl.classList.remove('penalty-flash'), 500);
+    // shake score
+    scoreEl.classList.add('negative');
+    setTimeout(() => scoreEl.classList.remove('negative'), 500);
+    // show penalty tag
+    const tag = document.getElementById('penaltyTag');
+    tag.style.display = 'block';
+    tag.style.animation = 'none';
+    void tag.offsetWidth;
+    tag.style.animation = 'floatUp 1.2s ease forwards';
+    setTimeout(() => { tag.style.display = 'none'; }, 1200);
+  }
+
+  barEl.style.width = score + '%';
+  scoreEl.textContent = score + '점';
+
+  const emoji = score >= 80 ? '🌟' : score >= 60 ? '🎤' : score >= 40 ? '🎵' : '🎧';
+  document.getElementById('debutEmoji').textContent = emoji;
+
+  if (score >= 100) setTimeout(() => launchDebut(true), 600);
+  if (score === 0 && !ok && questionCount > 3) setTimeout(() => launchDebut(false), 600);
+}
+
+function launchDebut(success) {
+  const c = ALL_CANDIDATES[selectedCandIdx];
+  document.getElementById('debutModal').classList.add('show');
+  if (success) {
+    document.getElementById('modalEmoji').textContent = c.emoji;
+    document.getElementById('modalTitle').className = 'modal-title success';
+    document.getElementById('modalTitle').textContent = '데뷔 확정!';
+    document.getElementById('modalDesc').textContent = `${c.name}가 국민 투표 1위! 돌림힘을 완벽하게 마스터했어요 ✨`;
+    launchConfetti();
+  } else {
+    document.getElementById('modalEmoji').textContent = '😭';
+    document.getElementById('modalTitle').className = 'modal-title fail';
+    document.getElementById('modalTitle').textContent = '탈락...';
+    const lastName = c.name[c.name.length - 1];
+    const needsI = '박닥락막삭악작착카탁파학'.includes(lastName) || (lastName.charCodeAt(0) - 0xAC00) % 28 !== 0;
+    const particle = needsI ? '아' : '야';
+    document.getElementById('modalDesc').textContent = `${c.name}${particle} 데뷔가 하고 싶니?ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ`;
+  }
+}
+
+function closeModal() {
+  document.getElementById('debutModal').classList.remove('show');
+  score = 0;
+  questionCount = 0;
+  document.getElementById('debutBar').style.width = '0%';
+  document.getElementById('debutScore').textContent = '0점';
+  document.getElementById('debutEmoji').textContent = '🎤';
+  newQuestion();
+}
+
+function launchConfetti() {
+  const wrap = document.getElementById('confettiWrap');
+  wrap.innerHTML = '';
+  const colors = ['#1A5FFF','#F5A623','#22C55E','#EF4444','#FF6B9D','#FCD34D'];
+  for (let i = 0; i < 80; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    const size = Math.random() * 9 + 4;
+    el.style.cssText = `left:${Math.random()*100}vw;width:${size}px;height:${size}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'3px'};animation-duration:${Math.random()*2+1.5}s;animation-delay:${Math.random()*0.8}s;`;
+    wrap.appendChild(el);
+  }
+  setTimeout(() => { wrap.innerHTML = ''; }, 4500);
+}
+
+// ── INIT ──
+buildSelectScreen();
+</script>
 </body>
 </html>
-

@@ -1,378 +1,1386 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>에너지 효율 계산 시뮬레이션</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Malgun Gothic', sans-serif;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #ffecd2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .container {
-            background: white;
-            border-radius: 25px;
-            padding: 30px 25px;
-            max-width: 500px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(255, 105, 180, 0.3);
-            border: 4px solid #ff69b4;
-        }
-        
-        h1 {
-            color: #ff1493;
-            font-size: 26px;
-            margin-bottom: 10px;
-            text-align: center;
-            text-shadow: 2px 2px 4px rgba(255, 20, 147, 0.2);
-        }
-        
-        .subtitle {
-            color: #ff69b4;
-            font-size: 14px;
-            text-align: center;
-            margin-bottom: 25px;
-            font-weight: bold;
-        }
-        
-        .problem-box {
-            background: linear-gradient(135deg, #fff5f7 0%, #ffe6f0 100%);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 25px;
-            border: 3px dashed #ff69b4;
-            position: relative;
-        }
-        
-        .problem-box::before {
-            content: '🎪';
-            position: absolute;
-            top: -15px;
-            left: 20px;
-            font-size: 30px;
-            background: white;
-            padding: 0 10px;
-        }
-        
-        .problem-title {
-            font-weight: bold;
-            color: #ff1493;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        
-        .problem-text {
-            font-size: 16px;
-            line-height: 1.8;
-            color: #333;
-        }
-        
-        .icon {
-            font-size: 50px;
-            text-align: center;
-            margin: 20px 0;
-            animation: bounce 2s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .answer-section {
-            background: linear-gradient(135deg, #fff9e6 0%, #ffe6cc 100%);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 3px solid #ffa500;
-        }
-        
-        .answer-label {
-            font-weight: bold;
-            color: #ff8c00;
-            margin-bottom: 10px;
-            font-size: 15px;
-            text-align: center;
-        }
-        
-        .input-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        input[type="number"] {
-            flex: 1;
-            padding: 12px;
-            font-size: 18px;
-            border: 3px solid #ff69b4;
-            border-radius: 15px;
-            text-align: center;
-            font-weight: bold;
-            background: white;
-        }
-        
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #ff1493;
-            box-shadow: 0 0 10px rgba(255, 20, 147, 0.3);
-        }
-        
-        .unit {
-            font-size: 20px;
-            font-weight: bold;
-            color: #ff1493;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .btn-submit {
-            background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
-            color: white;
-        }
-        
-        .btn-submit:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 6px 12px rgba(255, 107, 157, 0.4);
-        }
-        
-        .btn-new {
-            background: linear-gradient(135deg, #ffa94d 0%, #ff8243 100%);
-            color: white;
-        }
-        
-        .btn-new:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 6px 12px rgba(255, 169, 77, 0.4);
-        }
-        
-        .result {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-            display: none;
-            border: 4px solid;
-        }
-        
-        .result.show {
-            display: block;
-            animation: slideIn 0.5s;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .result.correct {
-            border-color: #32cd32;
-            background: linear-gradient(135deg, #f0fff0 0%, #e6ffe6 100%);
-        }
-        
-        .result.incorrect {
-            border-color: #ff6b9d;
-            background: linear-gradient(135deg, #fff5f8 0%, #ffe6f0 100%);
-        }
-        
-        .result-icon {
-            font-size: 60px;
-            margin-bottom: 10px;
-            animation: pop 0.5s;
-        }
-        
-        @keyframes pop {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        
-        .result-text {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        
-        .result.correct .result-text {
-            color: #32cd32;
-        }
-        
-        .result.incorrect .result-text {
-            color: #ff1493;
-        }
-        
-        .result-detail {
-            font-size: 15px;
-            color: #333;
-            margin-top: 10px;
-            line-height: 1.8;
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: left;
-        }
-        
-        .decoration {
-            text-align: center;
-            font-size: 30px;
-            margin: 10px 0;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🏐 해변 돌림힘 도장</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sky1:#87ceeb; --sky2:#4a9eca; --sea1:#1e90ff; --sea2:#006994;
+  --sand:#f5deb3; --sand2:#e8c98a; --white:#fffef9;
+  --coral:#ff6b6b; --gold:#ffd700; --green:#2ecc71;
+  --ink:#1a2a3a; --ink2:#2c4a6a; --ink3:#5a7a9a;
+  --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;overflow-x:hidden;}
+
+body {
+  font-family:'Nanum Gothic',sans-serif;
+  background: linear-gradient(180deg,
+    var(--sky1) 0%, var(--sky2) 35%,
+    var(--sea1) 35%, var(--sea2) 65%,
+    var(--sand) 65%, var(--sand2) 100%);
+  background-attachment: fixed;
+  min-height:100vh;
+  position:relative;
+}
+
+/* ── 배경 장식 ── */
+.bg-deco{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+/* 구름 */
+.cloud{position:absolute;background:rgba(255,255,255,0.85);border-radius:50px;animation:float-cloud linear infinite;}
+.cloud::before,.cloud::after{content:'';position:absolute;background:inherit;border-radius:50%;}
+@keyframes float-cloud{0%{transform:translateX(-200px);}100%{transform:translateX(calc(100vw + 200px));}}
+/* 파도 */
+.wave{position:absolute;bottom:35%;width:200%;height:40px;
+  background:rgba(255,255,255,0.15);border-radius:50%;
+  animation:wave-anim ease-in-out infinite alternate;}
+@keyframes wave-anim{0%{transform:translateX(-5%) scaleY(1);}100%{transform:translateX(5%) scaleY(1.3);}}
+/* 모래사장 패턴 */
+.sand-stars{position:absolute;bottom:0;left:0;right:0;height:35%;
+  background-image:radial-gradient(circle,rgba(139,90,43,0.2) 1px,transparent 1px);
+  background-size:20px 20px;}
+/* 야자수 */
+.palm{position:absolute;bottom:33%;font-size:60px;opacity:0.7;animation:palm-sway 4s ease-in-out infinite alternate;}
+@keyframes palm-sway{0%{transform:rotate(-3deg);}100%{transform:rotate(3deg);}}
+
+/* ── 랩 ── */
+.wrap{position:relative;z-index:1;max-width:460px;margin:0 auto;padding:12px 12px 60px;}
+
+/* ── 헤더 ── */
+.header-card{
+  background:rgba(255,255,255,0.92);
+  border-radius:20px;
+  border:2.5px solid rgba(30,144,255,0.3);
+  padding:14px 16px;
+  margin-bottom:12px;
+  box-shadow:0 8px 24px rgba(0,0,100,0.12);
+  backdrop-filter:blur(8px);
+  position:relative;overflow:hidden;
+}
+.header-card::before{
+  content:'🌊🏐🌊';font-size:16px;letter-spacing:6px;
+  position:absolute;top:6px;right:8px;opacity:0.3;
+}
+.header-title{
+  font-family:'Nanum Myeongjo',serif;
+  font-size:18px;font-weight:800;color:var(--ink);
+  margin-bottom:2px;
+}
+.header-sub{font-size:11px;color:var(--ink3);margin-bottom:10px;letter-spacing:0.05em;}
+
+/* 게임 스탯 바 */
+.game-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+.stat-box{
+  background:linear-gradient(135deg,#e8f4ff,#d0e8ff);
+  border:1.5px solid rgba(30,144,255,0.25);
+  border-radius:10px;padding:7px 6px;text-align:center;
+}
+.stat-lbl{font-size:10px;font-weight:700;color:var(--ink3);letter-spacing:0.05em;display:block;}
+.stat-val{font-size:18px;font-weight:800;color:var(--sea2);line-height:1.2;}
+.stat-val.gold{color:#c8a000;}
+.stat-val.green{color:#1a8a4a;}
+
+/* 콤보 표시 */
+.combo-bar{
+  display:none;align-items:center;gap:8px;
+  background:linear-gradient(135deg,#fff3cd,#ffe08a);
+  border:2px solid #ffd700;border-radius:10px;
+  padding:7px 12px;margin-bottom:8px;
+  animation:combo-bounce 0.4s cubic-bezier(.34,1.56,.64,1);
+}
+.combo-bar.show{display:flex;}
+@keyframes combo-bounce{0%{transform:scale(0.8);}100%{transform:scale(1);}}
+.combo-fire{font-size:20px;animation:fire-shake 0.3s infinite alternate;}
+@keyframes fire-shake{0%{transform:rotate(-10deg);}100%{transform:rotate(10deg);}}
+.combo-text{font-size:14px;font-weight:800;color:#8a6000;}
+
+/* HP 바 */
+.hp-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.hp-label{font-size:11px;font-weight:800;color:var(--coral);white-space:nowrap;}
+.hp-track{flex:1;height:10px;background:#ffd0d0;border-radius:99px;overflow:hidden;border:1px solid #ffaaaa;}
+.hp-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#ff6b6b,#ff9f43);transition:width 0.4s ease;box-shadow:0 0 6px rgba(255,100,50,0.4);}
+
+/* XP 바 */
+.xp-row{display:flex;align-items:center;gap:8px;}
+.xp-label{font-size:11px;font-weight:800;color:#2c7adb;white-space:nowrap;}
+.xp-track{flex:1;height:8px;background:#d0e8ff;border-radius:99px;overflow:hidden;border:1px solid #a0c8ff;}
+.xp-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#4a9eca,#1e90ff);transition:width 0.5s ease;box-shadow:0 0 6px rgba(30,144,255,0.4);}
+
+/* ── 캐릭터 + 말풍선 ── */
+.char-row{display:flex;align-items:flex-end;gap:10px;margin-bottom:12px;}
+.char-canvas-wrap{flex-shrink:0;}
+#char-canvas{display:block;width:90px;height:110px;}
+.speech-bubble{
+  flex:1;
+  background:rgba(255,255,255,0.95);
+  border:2.5px solid rgba(30,144,255,0.4);
+  border-radius:16px 16px 16px 4px;
+  padding:10px 12px;
+  font-size:13px;line-height:1.8;color:var(--ink2);font-weight:700;
+  box-shadow:0 4px 12px rgba(0,0,100,0.1);
+  position:relative;
+  min-height:60px;
+}
+.speech-bubble::before{
+  content:'';position:absolute;left:-12px;bottom:14px;
+  border:6px solid transparent;
+  border-right-color:rgba(30,144,255,0.4);
+}
+.speech-bubble::after{
+  content:'';position:absolute;left:-8px;bottom:15px;
+  border:5px solid transparent;
+  border-right-color:rgba(255,255,255,0.95);
+}
+.bubble-name{font-size:10px;font-weight:800;color:var(--sea2);margin-bottom:3px;letter-spacing:0.05em;}
+
+/* ── 유형 탭 ── */
+.type-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.tab-btn{
+  padding:6px 13px;border-radius:99px;
+  border:2px solid rgba(30,144,255,0.3);
+  background:rgba(255,255,255,0.8);
+  color:var(--ink3);font-size:11px;font-weight:800;
+  font-family:'Nanum Gothic',sans-serif;cursor:pointer;
+  transition:all 0.15s;letter-spacing:0.04em;
+}
+.tab-btn.active{background:var(--sea2);color:#fff;border-color:var(--sea2);box-shadow:0 3px 8px rgba(0,100,200,0.3);}
+
+/* ── 문제 카드 ── */
+.q-card{
+  background:rgba(255,255,255,0.95);
+  border-radius:var(--radius);
+  border:2px solid rgba(30,144,255,0.2);
+  padding:16px 14px;
+  margin-bottom:10px;
+  box-shadow:0 8px 24px rgba(0,0,100,0.1);
+  backdrop-filter:blur(8px);
+  position:relative;overflow:hidden;
+}
+.q-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--sea1),var(--coral),var(--gold));
+}
+.q-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:linear-gradient(135deg,var(--sea2),var(--sea1));
+  color:#fff;font-size:11px;font-weight:800;
+  padding:4px 12px;border-radius:99px;margin-bottom:10px;
+  letter-spacing:0.05em;box-shadow:0 2px 6px rgba(0,100,200,0.3);
+}
+.q-text{
+  font-family:'Nanum Myeongjo',serif;
+  font-size:14.5px;line-height:2.1;color:var(--ink);margin-bottom:4px;
+}
+.q-text strong{color:var(--sea2);font-weight:800;}
+
+.cond-box{
+  background:linear-gradient(135deg,#f0f8ff,#e8f4ff);
+  border:1.5px solid rgba(30,144,255,0.2);
+  border-radius:10px;padding:10px 12px;margin:10px 0;
+  font-size:13px;line-height:2.0;color:var(--ink2);
+}
+.cond-box .val{color:var(--sea2);font-weight:800;font-size:14px;}
+
+/* 그림 영역 */
+.fig-wrap{
+  background:linear-gradient(180deg,#e8f6ff,#d0ecff);
+  border:1.5px solid rgba(30,144,255,0.2);
+  border-radius:10px;padding:12px 8px 10px;margin:10px 0;text-align:center;
+}
+.fig-label{font-size:10px;color:var(--ink3);font-weight:700;letter-spacing:0.1em;margin-bottom:4px;}
+svg.fig{width:100%;max-width:340px;height:auto;display:block;margin:0 auto;}
+
+/* 선택지 */
+.opts-label{font-size:11px;font-weight:800;color:var(--ink3);letter-spacing:0.08em;margin:6px 0 8px;}
+.opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.opt{
+  padding:12px 8px;border-radius:10px;
+  border:2px solid rgba(30,144,255,0.2);
+  background:rgba(255,255,255,0.9);
+  cursor:pointer;font-family:'Nanum Gothic',sans-serif;
+  font-size:13px;font-weight:700;color:var(--ink);
+  display:flex;align-items:center;gap:8px;
+  transition:all 0.15s;text-align:left;
+}
+.opt:hover:not(:disabled){border-color:var(--sea1);background:#e8f4ff;transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,100,200,0.15);}
+.opt .lbl{
+  width:24px;height:24px;border-radius:50%;
+  background:linear-gradient(135deg,#e8f0ff,#d0e0ff);
+  border:2px solid rgba(30,144,255,0.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:var(--ink3);flex-shrink:0;
+}
+.opt.correct{border-color:var(--green);background:#eafaf1;}
+.opt.correct .lbl{background:var(--green);border-color:var(--green);color:#fff;}
+.opt.wrong{border-color:var(--coral);background:#fff0ee;}
+.opt.wrong .lbl{background:var(--coral);border-color:var(--coral);color:#fff;}
+.opt:disabled{cursor:default;}
+
+/* 힌트 */
+.hint-toggle{
+  font-size:12px;font-weight:700;color:var(--ink3);
+  background:rgba(255,255,255,0.8);
+  border:1.5px dashed rgba(30,144,255,0.3);
+  padding:8px;width:100%;cursor:pointer;
+  font-family:'Nanum Gothic',sans-serif;border-radius:10px;
+  transition:all 0.15s;margin-top:8px;letter-spacing:0.04em;
+}
+.hint-toggle:hover{border-color:var(--sea1);color:var(--sea2);background:#e8f4ff;}
+.hint-body{
+  display:none;margin-top:8px;
+  background:linear-gradient(135deg,#e8f4ff,#d8ecff);
+  border:1.5px solid rgba(30,144,255,0.25);border-radius:10px;
+  padding:12px 14px;font-size:13px;line-height:2.0;color:var(--sea2);
+}
+.hint-body.open{display:block;}
+.hint-formula{font-weight:800;font-size:14px;display:block;margin-top:4px;color:var(--sea2);}
+
+/* ── 버튼 ── */
+.btn-row{display:flex;gap:8px;margin-top:10px;}
+.btn{
+  flex:1;padding:14px;border-radius:12px;
+  font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:800;
+  cursor:pointer;transition:all 0.18s;letter-spacing:0.04em;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn-new{
+  background:linear-gradient(135deg,var(--sea2),var(--sea1));
+  border:none;color:#fff;
+  box-shadow:0 4px 12px rgba(0,100,200,0.35),0 2px 0 #005080;
+}
+.btn-new:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,100,200,0.45),0 2px 0 #005080;}
+.btn-new:active{transform:translateY(1px);box-shadow:0 2px 6px rgba(0,100,200,0.3),0 1px 0 #005080;}
+.btn-sol{
+  background:rgba(255,255,255,0.9);
+  border:2px solid rgba(30,144,255,0.25);color:var(--ink3);
+}
+.btn-sol:hover:not(:disabled){border-color:var(--coral);color:var(--coral);background:#fff0ee;}
+.btn-sol:disabled{opacity:0.35;cursor:default;}
+
+/* ── 풀이 모달 ── */
+.sol-overlay{
+  display:none;position:fixed;inset:0;z-index:100;
+  background:rgba(0,30,80,0.7);backdrop-filter:blur(4px);
+  justify-content:center;align-items:flex-start;
+  overflow-y:auto;padding:16px 12px 40px;
+}
+.sol-overlay.open{display:flex;}
+.sol-modal{
+  background:var(--white);border-radius:20px;
+  border:2.5px solid rgba(30,144,255,0.3);
+  width:100%;max-width:440px;overflow:hidden;
+  box-shadow:0 16px 40px rgba(0,30,100,0.25);margin-top:10px;
+}
+.sol-header{
+  background:linear-gradient(135deg,var(--coral),#ff9f43);
+  color:#fff;padding:14px 16px;
+  font-size:14px;font-weight:800;letter-spacing:0.05em;
+  display:flex;align-items:center;gap:8px;
+}
+.sol-intro{
+  padding:14px 16px;font-size:13.5px;line-height:1.9;
+  color:var(--ink2);border-bottom:1px solid #e8f0ff;
+  font-family:'Nanum Myeongjo',serif;
+}
+.puzzle-section{padding:14px 16px;}
+.puzzle-title{font-size:12px;font-weight:800;color:var(--ink3);letter-spacing:0.08em;margin-bottom:10px;}
+
+/* 공 던지기 게임 */
+.throw-area{
+  position:relative;width:100%;height:210px;margin-top:4px;
+  border-radius:14px;overflow:hidden;touch-action:none;
+  background:linear-gradient(180deg,#dff2ff 0%,#bfe6ff 55%,#f0dca8 55%,#e3c589 100%);
+  border:1.5px solid rgba(30,144,255,0.25);
+}
+.throw-target{
+  position:absolute;width:58px;height:58px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  background:conic-gradient(from 0deg,#fff 0 90deg,#ff6b6b 0 180deg,#fff 0 270deg,#ffd700 0 360deg);
+  border:3px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  font-family:'Nanum Gothic',sans-serif;color:var(--ink);text-align:center;
+  line-height:1.15;padding:2px;
+}
+.throw-target .tv{font-size:11px;font-weight:800;}
+.throw-target .tu{font-size:8.5px;font-weight:700;opacity:0.75;}
+.throw-target.hit-correct{animation:target-pop 0.55s ease forwards;}
+.throw-target.hit-wrong{animation:target-shake 0.35s ease;}
+@keyframes target-pop{0%{transform:scale(1);}50%{transform:scale(1.4);}100%{transform:scale(0);opacity:0;}}
+@keyframes target-shake{0%,100%{transform:translateX(0) rotate(0);}25%{transform:translateX(-6px) rotate(-8deg);}75%{transform:translateX(6px) rotate(8deg);}}
+
+.throw-ball{
+  position:absolute;width:40px;height:40px;border-radius:50%;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle at 35% 30%,#fff,#ffe27a 40%,#ff9f43 75%,#e06b1f);
+  border:2px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,0.25);
+  cursor:grab;touch-action:none;z-index:5;
+}
+.throw-ball.dragging{cursor:grabbing;}
+
+.aim-line{
+  position:absolute;height:2px;transform-origin:0 50%;
+  background:repeating-linear-gradient(90deg,rgba(30,60,90,0.55) 0 6px,transparent 6px 12px);
+  pointer-events:none;display:none;z-index:4;
+}
+
+.throw-msg{text-align:center;font-size:12.5px;font-weight:800;color:var(--ink3);margin:8px 0 2px;min-height:16px;}
+.throw-msg.ok{color:#1a8a4a;}
+.throw-msg.ng{color:var(--coral);}
+
+.sol-explain{display:none;}
+.sol-explain.show{display:block;}
+.sol-explain .exp-box{
+  background:linear-gradient(135deg,#eafaf1,#dff5e4);
+  border:1.5px solid #a9dfbf;border-radius:10px;
+  padding:12px 14px;margin-bottom:10px;font-size:13.5px;line-height:2.0;color:var(--ink2);
+}
+.sol-explain .exp-formula{font-weight:800;color:#1a8a4a;font-size:14px;display:block;margin-top:6px;}
+
+.close-sol-btn{
+  width:100%;padding:12px;margin-top:8px;
+  background:var(--ink);color:#fff;border:none;border-radius:10px;
+  font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:800;
+  cursor:pointer;display:none;
+  box-shadow:0 3px 0 #000;
+}
+
+/* ── 유니콘 오버레이 ── */
+.unicorn-overlay{
+  display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(0,20,60,0.6);backdrop-filter:blur(6px);
+  justify-content:center;align-items:center;padding:20px;
+}
+.unicorn-overlay.open{display:flex;}
+.unicorn-modal{
+  background:linear-gradient(160deg,#fff0fb 0%,#f0f0ff 50%,#e8fff4 100%);
+  border:3px solid #e879f9;border-radius:24px;
+  width:100%;max-width:340px;padding:22px 18px 18px;
+  text-align:center;
+  box-shadow:0 0 0 6px rgba(232,121,249,0.15),6px 6px 0 #c026d3;
+  position:relative;overflow:hidden;
+  animation:unicorn-pop 0.45s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes unicorn-pop{
+  0%{transform:scale(0.4) rotate(-8deg);opacity:0;}
+  100%{transform:scale(1) rotate(0deg);opacity:1;}
+}
+.unicorn-modal::before{
+  content:'✨💫⭐✨💫⭐✨💫';
+  position:absolute;top:6px;left:0;right:0;
+  font-size:13px;letter-spacing:2px;opacity:0.3;pointer-events:none;
+}
+#unicorn-canvas{display:block;margin:0 auto 8px;width:200px;height:175px;filter:drop-shadow(0 4px 12px rgba(192,38,211,0.25));}
+.unicorn-bubble{
+  background:#fff;border:2px solid #e879f9;border-radius:14px;
+  padding:10px 14px;font-family:'Nanum Myeongjo',serif;
+  font-size:15px;font-weight:700;color:#7c3aed;
+  margin:0 auto 12px;max-width:280px;
+  box-shadow:2px 2px 0 #e879f9;line-height:1.8;position:relative;
+}
+.unicorn-bubble::before{content:'';position:absolute;top:-12px;left:50%;transform:translateX(-50%);border:6px solid transparent;border-bottom-color:#e879f9;}
+.unicorn-bubble::after{content:'';position:absolute;top:-9px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-bottom-color:#fff;}
+.unicorn-stars{font-size:20px;letter-spacing:6px;margin-bottom:12px;animation:star-spin 1.5s ease-in-out infinite alternate;}
+@keyframes star-spin{0%{transform:scale(1);opacity:0.7;}100%{transform:scale(1.15);opacity:1;}}
+.unicorn-btn{
+  width:100%;padding:13px;
+  background:linear-gradient(135deg,#c026d3,#7c3aed);
+  border:none;border-radius:12px;color:#fff;
+  font-family:'Nanum Gothic',sans-serif;font-size:15px;font-weight:800;
+  cursor:pointer;box-shadow:0 4px 0 #7c3aed;transition:all 0.15s;letter-spacing:0.04em;
+}
+.unicorn-btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 #7c3aed;}
+.unicorn-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #7c3aed;}
+
+/* ── 아웃(게임오버) 오버레이 ── */
+.out-overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(30,5,5,0.78);backdrop-filter:blur(6px);
+  justify-content:center;align-items:center;padding:20px;
+}
+.out-overlay.open{display:flex;}
+.out-modal{
+  background:linear-gradient(160deg,#2c0a0a 0%,#4a1414 60%,#331010 100%);
+  border:3px solid #ff6b6b;border-radius:24px;
+  width:100%;max-width:320px;padding:24px 18px 20px;
+  text-align:center;
+  box-shadow:0 0 0 6px rgba(255,107,107,0.15),6px 6px 0 #8a0000;
+  position:relative;overflow:hidden;
+  animation:out-pop 0.45s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes out-pop{0%{transform:scale(0.4) rotate(8deg);opacity:0;}100%{transform:scale(1) rotate(0deg);opacity:1;}}
+.out-stamp{
+  font-family:'Nanum Myeongjo',serif;
+  font-size:22px;font-weight:800;color:#ff6b6b;letter-spacing:0.08em;
+  margin-bottom:10px;text-shadow:0 0 14px rgba(255,60,60,0.7);
+  animation:out-stamp-shake 0.4s ease-in-out infinite alternate;
+}
+@keyframes out-stamp-shake{0%{transform:rotate(-4deg) scale(1);}100%{transform:rotate(4deg) scale(1.05);}}
+#out-canvas{
+  display:block;margin:2px auto 12px;width:120px;height:145px;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+  animation:out-dance 0.55s ease-in-out infinite;
+}
+@keyframes out-dance{
+  0%{transform:translateX(0) rotate(-10deg);}
+  25%{transform:translateX(-12px) rotate(8deg) translateY(-8px);}
+  50%{transform:translateX(0) rotate(-10deg);}
+  75%{transform:translateX(12px) rotate(10deg) translateY(-8px);}
+  100%{transform:translateX(0) rotate(-10deg);}
+}
+.out-msg{font-size:13.5px;line-height:1.85;color:#ffdede;font-weight:700;margin-bottom:16px;font-family:'Nanum Myeongjo',serif;}
+.out-btn{
+  width:100%;padding:13px;
+  background:linear-gradient(135deg,#ff6b6b,#ff9f43);
+  border:none;border-radius:12px;color:#fff;
+  font-family:'Nanum Gothic',sans-serif;font-size:15px;font-weight:800;
+  cursor:pointer;box-shadow:0 4px 0 #b34a1f;transition:all 0.15s;letter-spacing:0.04em;
+}
+.out-btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 #b34a1f;}
+.out-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #b34a1f;}
+
+/* 파티클 */
+.sparkle{position:fixed;pointer-events:none;z-index:350;font-size:22px;animation:sparkle-fall 1.3s ease-out forwards;}
+@keyframes sparkle-fall{0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1;}100%{transform:translateY(130px) rotate(360deg) scale(0);opacity:0;}}
+
+/* ── 레벨업 배너 ── */
+.levelup-banner{
+  display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:400;
+  background:linear-gradient(135deg,#ffd700,#ff9500);
+  border:3px solid #fff;border-radius:16px;
+  padding:12px 24px;text-align:center;
+  font-size:16px;font-weight:800;color:#fff;
+  box-shadow:0 8px 24px rgba(200,150,0,0.5);
+  animation:levelup-anim 0.5s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap;
+}
+.levelup-banner.show{display:block;}
+@keyframes levelup-anim{0%{transform:translateX(-50%) scale(0.5) translateY(-30px);opacity:0;}100%{transform:translateX(-50%) scale(1) translateY(0);opacity:1;}}
+
+/* 데미지 / 정답 플로팅 텍스트 */
+.float-text{
+  position:fixed;font-size:20px;font-weight:800;pointer-events:none;z-index:400;
+  animation:float-up 1s ease-out forwards;
+}
+@keyframes float-up{0%{transform:translateY(0);opacity:1;}100%{transform:translateY(-80px);opacity:0;}}
+
+/* 흔들리기 */
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.shake{animation:shake 0.35s ease;}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎨 에너지 효율 계산 놀이터 🎪</h1>
-        <p class="subtitle">✨ 통합과학2 - 에너지 효율 문제 ✨</p>
-        
-        <div class="problem-box">
-            <div class="problem-title">🎯 문제 11번 유형</div>
-            <p class="problem-text" id="problemText">
-                어떤 조명에 매초 60 J의 전기 에너지를 공급하였더니, 18 J의 빛에너지가 발생하고 42 J의 열에너지가 발생하였다. 이 조명 기구의 에너지 효율은?
-            </p>
-            
-            <div class="icon">🎠</div>
-        </div>
-        
-        <div class="answer-section">
-            <div class="answer-label">🎁 답을 입력하세요 🎁</div>
-            <div class="input-group">
-                <input type="number" id="answerInput" placeholder="답 입력" min="0" max="100">
-                <span class="unit">%</span>
-            </div>
-            
-            <div class="button-group">
-                <button class="btn-submit" onclick="checkAnswer()">✨ 정답 확인</button>
-                <button class="btn-new" onclick="generateNewProblem()">🎪 새 문제</button>
-            </div>
-        </div>
-        
-        <div id="result" class="result">
-            <div class="result-icon"></div>
-            <div class="result-text"></div>
-            <div class="result-detail"></div>
-        </div>
-        
-        <div class="decoration">🎈 🎨 🎪 🎠 🎡 🎢</div>
+
+<!-- 배경 장식 -->
+<div class="bg-deco">
+  <div class="cloud" style="top:5%;width:120px;height:28px;animation-duration:28s;animation-delay:-5s;"><div style="width:70px;height:40px;background:rgba(255,255,255,0.85);border-radius:50%;position:absolute;top:-18px;left:20px;"></div></div>
+  <div class="cloud" style="top:12%;width:90px;height:22px;animation-duration:22s;animation-delay:-12s;"><div style="width:55px;height:32px;background:rgba(255,255,255,0.85);border-radius:50%;position:absolute;top:-14px;left:15px;"></div></div>
+  <div class="wave" style="animation-duration:5s;animation-delay:0s;"></div>
+  <div class="wave" style="animation-duration:7s;animation-delay:-2s;opacity:0.08;bottom:36%;"></div>
+  <div class="sand-stars"></div>
+  <div class="palm" style="left:2%;font-size:55px;">🌴</div>
+  <div class="palm" style="right:3%;font-size:48px;animation-delay:-2s;">🌴</div>
+</div>
+
+<div class="wrap">
+
+  <!-- 헤더 -->
+  <div class="header-card">
+    <div class="header-title">🏐 해변 돌림힘 도장</div>
+    <div class="header-sub">2015 개정 교육과정 · 물리학II · 역학적 상호작용</div>
+    <div class="game-stats">
+      <div class="stat-box">
+        <span class="stat-lbl">⚡ 레벨</span>
+        <span class="stat-val gold" id="st-lv">1</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-lbl">🏅 정답</span>
+        <span class="stat-val green" id="st-ok">0</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-lbl">🔥 콤보</span>
+        <span class="stat-val" id="st-combo" style="color:var(--coral)">0</span>
+      </div>
     </div>
-    
-    <script>
-        let currentAnswer = 0;
-        let currentInput = 0;
-        let currentUseful = 0;
-        let currentWasted = 0;
-        
-        const icons = ['🎠', '🎡', '🎢', '🎨', '🎪', '🧸', '🎁', '🎈', '🎯', '🎲'];
-        
-        function generateNewProblem() {
-            // 효율: 10%~50% 사이 (10% 단위로 변경하여 확실하게 정수가 되도록)
-            const efficiency = (Math.floor(Math.random() * 5) + 1) * 10;
-            
-            // 공급 에너지: 50~100 사이의 10의 배수
-            currentInput = (Math.floor(Math.random() * 6) + 5) * 10;
-            
-            // 유용한 에너지 계산 (효율에 맞게 정확히 계산 - 항상 정수)
-            currentUseful = (currentInput * efficiency) / 100;
-            
-            // 버려지는 에너지
-            currentWasted = currentInput - currentUseful;
-            
-            // 정답 저장
-            currentAnswer = efficiency;
-            
-            // 랜덤 아이콘 선택
-            const randomIcon = icons[Math.floor(Math.random() * icons.length)];
-            document.querySelector('.icon').textContent = randomIcon;
-            
-            // 문제 텍스트 업데이트
-            document.getElementById('problemText').innerHTML = 
-                `어떤 조명에 매초 <span style="color: #ff1493; font-weight: bold;">${currentInput}</span> J의 전기 에너지를 공급하였더니, <span style="color: #ffa500; font-weight: bold;">${currentUseful}</span> J의 빛에너지가 발생하고 <span style="color: #ff6b9d; font-weight: bold;">${currentWasted}</span> J의 열에너지가 발생하였다. 이 조명 기구의 에너지 효율은?`;
-            
-            // 입력창 및 결과 초기화
-            document.getElementById('answerInput').value = '';
-            document.getElementById('result').className = 'result';
-        }
-        
-        function checkAnswer() {
-            const userAnswer = parseInt(document.getElementById('answerInput').value);
-            const resultDiv = document.getElementById('result');
-            const resultIcon = resultDiv.querySelector('.result-icon');
-            const resultText = resultDiv.querySelector('.result-text');
-            const resultDetail = resultDiv.querySelector('.result-detail');
-            
-            if (isNaN(userAnswer)) {
-                alert('답을 입력해주세요! 🎈');
-                return;
-            }
-            
-            if (userAnswer === currentAnswer) {
-                resultDiv.className = 'result show correct';
-                resultIcon.textContent = '🎉';
-                resultText.textContent = '정답입니다!';
-                resultDetail.innerHTML = `
-                    <strong>🌟 풀이과정 🌟</strong><br><br>
-                    에너지 효율 = (유용한 에너지 ÷ 공급된 에너지) × 100<br><br>
-                    = (${currentUseful} J ÷ ${currentInput} J) × 100<br><br>
-                    = ${currentAnswer}%<br><br>
-                    <strong style="color: #32cd32;">✨ 훌륭해요! ✨</strong>
-                `;
-            } else {
-                resultDiv.className = 'result show incorrect';
-                resultIcon.textContent = '🎪';
-                resultText.textContent = '틀렸습니다!';
-                resultDetail.innerHTML = `
-                    <strong>💡 풀이과정 💡</strong><br><br>
-                    에너지 효율 = (유용한 에너지 ÷ 공급된 에너지) × 100<br><br>
-                    = (${currentUseful} J ÷ ${currentInput} J) × 100<br><br>
-                    = ${currentAnswer}%<br><br>
-                    <strong style="color: #ff1493;">🎨 다시 도전해보세요! 🎨</strong>
-                `;
-            }
-        }
-        
-        // Enter 키로 정답 확인
-        document.getElementById('answerInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkAnswer();
-            }
-        });
-        
-        // 페이지 로드 시 첫 문제 생성
-        generateNewProblem();
-    </script>
+    <!-- HP -->
+    <div class="hp-row">
+      <span class="hp-label">❤️ HP</span>
+      <div class="hp-track"><div class="hp-fill" id="hp-fill" style="width:100%"></div></div>
+      <span style="font-size:11px;font-weight:800;color:var(--coral)" id="hp-text">5/5</span>
+    </div>
+    <!-- XP -->
+    <div class="xp-row" style="margin-top:5px;">
+      <span class="xp-label">✨ XP</span>
+      <div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+      <span style="font-size:11px;font-weight:800;color:var(--sea2)" id="xp-text">0/10</span>
+    </div>
+    <!-- 콤보 배너 -->
+    <div class="combo-bar" id="combo-bar">
+      <span class="combo-fire">🔥</span>
+      <span class="combo-text" id="combo-text">콤보!</span>
+    </div>
+  </div>
+
+  <!-- 유형 탭 -->
+  <div class="type-tabs">
+    <button class="tab-btn active" onclick="setType(this,'all')">🌊 전체</button>
+    <button class="tab-btn" onclick="setType(this,'basic')">🏐 기본</button>
+    <button class="tab-btn" onclick="setType(this,'angle')">📐 각도</button>
+    <button class="tab-btn" onclick="setType(this,'multi')">⚖️ 두힘</button>
+  </div>
+
+  <!-- 캐릭터 + 말풍선 -->
+  <div class="char-row">
+    <div class="char-canvas-wrap">
+      <canvas id="char-canvas" width="110" height="135"></canvas>
+    </div>
+    <div class="speech-bubble">
+      <div class="bubble-name">💪 Marco (물리 코치)</div>
+      <div id="bubble-msg">어이, 친구야! 오늘도 돌림힘 공부하러 왔나? 마이 잘할 수 있을끼다! 🏐</div>
+    </div>
+  </div>
+
+  <!-- 문제 카드 -->
+  <div class="q-card" id="qcard">
+    <div class="q-badge" id="qbadge">🏐 기본형 문제</div>
+    <div class="q-text" id="qtext"></div>
+    <div class="cond-box" id="qcond"></div>
+    <div class="fig-wrap">
+      <div class="fig-label">[ 그 림 ]</div>
+      <svg class="fig" id="qsvg" viewBox="0 0 340 160" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="opts-label">▼ 정답을 골라봐라, 친구야!</div>
+    <div class="opts-grid" id="opts"></div>
+    <button class="hint-toggle" onclick="toggleHint()">🌊 힌트 보기 (공식 확인)</button>
+    <div class="hint-body" id="hint-body"></div>
+  </div>
+
+  <!-- 버튼 -->
+  <div class="btn-row">
+    <button class="btn btn-new" onclick="nextQ()">🏐 새 문제!</button>
+    <button class="btn btn-sol" id="btn-sol" onclick="openSolModal()" disabled>📖 풀이 보기</button>
+  </div>
+
+</div>
+
+<!-- 풀이 모달 -->
+<div class="sol-overlay" id="sol-overlay">
+  <div class="sol-modal">
+    <div class="sol-header">😅 아이고~ 틀렸네! 같이 풀어보자꼬!</div>
+    <div class="sol-intro" id="sol-intro"></div>
+    <div class="puzzle-section">
+      <div class="puzzle-title">▶ 공을 드래그했다 놓아서 정답 쪽으로 던져봐라!</div>
+      <div class="throw-area" id="throw-area">
+        <div class="aim-line" id="aim-line"></div>
+        <div class="throw-ball" id="throw-ball"></div>
+      </div>
+      <div class="throw-msg" id="throw-msg"></div>
+      <div class="sol-explain" id="sol-explain">
+        <div class="exp-box" id="exp-box"></div>
+      </div>
+      <button class="close-sol-btn" id="close-sol-btn" onclick="closeSolModal()">다음 문제로 가자꼬! →</button>
+    </div>
+  </div>
+</div>
+
+<!-- 유니콘 -->
+<div class="unicorn-overlay" id="unicorn-overlay">
+  <div class="unicorn-modal">
+    <canvas id="unicorn-canvas" width="300" height="260"></canvas>
+    <div class="unicorn-bubble" id="unicorn-bubble"></div>
+    <div class="unicorn-stars">⭐🦄✨🌈💫</div>
+    <button class="unicorn-btn" onclick="closeUnicorn()">🌊 계속 문제 풀기!</button>
+  </div>
+</div>
+
+<!-- 아웃 (게임오버) -->
+<div class="out-overlay" id="out-overlay">
+  <div class="out-modal">
+    <div class="out-stamp">💀 아 웃! 💀</div>
+    <canvas id="out-canvas" width="140" height="170"></canvas>
+    <div class="out-msg">아이고 체력이 다 떨어졌다 아이가!<br>처음부터 마음 다잡고 다시 도전해보자꼬! 🌊</div>
+    <button class="out-btn" onclick="closeOut()">🔄 다시 도전하기!</button>
+  </div>
+</div>
+
+<!-- 레벨업 배너 -->
+<div class="levelup-banner" id="levelup-banner">⚡ LEVEL UP! ⚡</div>
+
+<script>
+// ══════════════════════════
+//  유틸
+// ══════════════════════════
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const r2=x=>Math.round(x*100)/100;
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+// ══════════════════════════
+//  게임 상태
+// ══════════════════════════
+const MAX_HP=3, XP_PER_LEVEL=10;
+let hp=MAX_HP, xp=0, lv=1, combo=0, okCount=0;
+let currentQ=null, answered=false, selectedType='all', qCount=0;
+let throwTargets=[];
+let dragging=false;
+let touchGhost=null, touchSourceCard=null;
+
+// ══════════════════════════
+//  캐릭터 드로잉 (몸짱 외국인)
+// ══════════════════════════
+function drawMarco(emotion='neutral',canvasId='char-canvas'){
+  const cv=document.getElementById(canvasId);
+  const ctx=cv.getContext('2d');
+  const W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+
+  // 그림자
+  ctx.fillStyle='rgba(0,0,0,0.1)';
+  ctx.beginPath();ctx.ellipse(W*.5,H*.97,28,8,0,0,Math.PI*2);ctx.fill();
+
+  // 다리
+  ctx.strokeStyle='#3d7abf';ctx.lineWidth=14;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(W*.42,H*.78);ctx.lineTo(W*.38,H*.96);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W*.58,H*.78);ctx.lineTo(W*.62,H*.96);ctx.stroke();
+  // 반바지
+  ctx.fillStyle='#2266cc';
+  ctx.beginPath();ctx.ellipse(W*.5,H*.72,W*.2,H*.1,0,0,Math.PI*2);ctx.fill();
+  ctx.fillRect(W*.3,H*.62,W*.4,H*.14);
+
+  // 몸통 (근육)
+  ctx.fillStyle='#d4956a';
+  // 복근라인
+  ctx.beginPath();
+  ctx.moveTo(W*.3,H*.45);ctx.lineTo(W*.3,H*.68);
+  ctx.quadraticCurveTo(W*.5,H*.72,W*.7,H*.68);
+  ctx.lineTo(W*.7,H*.45);
+  ctx.quadraticCurveTo(W*.5,H*.4,W*.3,H*.45);
+  ctx.fill();
+  ctx.strokeStyle='#b07040';ctx.lineWidth=1.2;ctx.stroke();
+  // 복근 선
+  ctx.strokeStyle='rgba(140,80,30,0.3)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(W*.5,H*.45);ctx.lineTo(W*.5,H*.68);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W*.35,H*.52);ctx.lineTo(W*.65,H*.52);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W*.35,H*.59);ctx.lineTo(W*.65,H*.59);ctx.stroke();
+
+  // 팔 (오른쪽 - 공 들기)
+  ctx.strokeStyle='#d4956a';ctx.lineWidth=13;ctx.lineCap='round';
+  if(emotion==='celebrate'){
+    ctx.beginPath();ctx.moveTo(W*.3,H*.52);ctx.lineTo(W*.1,H*.32);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(W*.7,H*.52);ctx.lineTo(W*.92,H*.28);ctx.stroke();
+  } else if(emotion==='sad'||emotion==='out'){
+    ctx.beginPath();ctx.moveTo(W*.3,H*.52);ctx.lineTo(W*.18,H*.66);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(W*.7,H*.52);ctx.lineTo(W*.82,H*.66);ctx.stroke();
+  } else {
+    // 배구공 들기 포즈
+    ctx.beginPath();ctx.moveTo(W*.3,H*.52);ctx.lineTo(W*.1,H*.38);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(W*.7,H*.52);ctx.lineTo(W*.88,H*.4);ctx.stroke();
+    // 손
+    ctx.fillStyle='#d4956a';
+    ctx.beginPath();ctx.arc(W*.88,H*.38,7,0,Math.PI*2);ctx.fill();
+  }
+
+  // 머리
+  ctx.fillStyle='#d4956a';
+  ctx.beginPath();ctx.arc(W*.5,H*.25,W*.18,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#b07040';ctx.lineWidth=1.5;ctx.stroke();
+  // 목
+  ctx.fillStyle='#d4956a';
+  ctx.fillRect(W*.43,H*.38,W*.14,H*.08);
+
+  // 머리카락 (금발)
+  ctx.fillStyle='#d4a017';
+  ctx.beginPath();
+  ctx.ellipse(W*.5,H*.12,W*.17,W*.1,0,Math.PI,0);ctx.fill();
+  ctx.beginPath();ctx.arc(W*.34,H*.2,6,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(W*.66,H*.2,6,0,Math.PI*2);ctx.fill();
+
+  // 눈
+  const eyeY=H*.25;
+  if(emotion==='celebrate'){
+    // 웃는 눈
+    ctx.strokeStyle='#3a2010';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.arc(W*.41,eyeY,5,Math.PI,0);ctx.stroke();
+    ctx.beginPath();ctx.arc(W*.59,eyeY,5,Math.PI,0);ctx.stroke();
+  } else if(emotion==='sad'){
+    // 슬픈 눈
+    ctx.fillStyle='#3a2010';
+    ctx.beginPath();ctx.arc(W*.41,eyeY,3,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(W*.59,eyeY,3,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#4a88cc';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(W*.41,eyeY+4);ctx.lineTo(W*.41,eyeY+10);ctx.stroke();
+  } else if(emotion==='out'){
+    // 기절한 X자 눈
+    ctx.strokeStyle='#3a2010';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(W*.36,eyeY-5);ctx.lineTo(W*.46,eyeY+5);ctx.moveTo(W*.46,eyeY-5);ctx.lineTo(W*.36,eyeY+5);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(W*.54,eyeY-5);ctx.lineTo(W*.64,eyeY+5);ctx.moveTo(W*.64,eyeY-5);ctx.lineTo(W*.54,eyeY+5);ctx.stroke();
+    // 별 (기절 효과)
+    ctx.fillStyle='#ffd700';ctx.font=`${W*.13}px sans-serif`;ctx.textAlign='center';
+    ctx.fillText('✦',W*.22,H*.14);
+    ctx.fillText('✦',W*.8,H*.1);
+  } else {
+    ctx.fillStyle='#3a2010';
+    ctx.beginPath();ctx.arc(W*.41,eyeY,3.5,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(W*.59,eyeY,3.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';
+    ctx.beginPath();ctx.arc(W*.42,eyeY-1,1.2,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(W*.60,eyeY-1,1.2,0,Math.PI*2);ctx.fill();
+  }
+
+  // 입
+  ctx.strokeStyle='#8a4020';ctx.lineWidth=2;
+  if(emotion==='celebrate'){
+    ctx.beginPath();ctx.arc(W*.5,H*.3,7,0.1*Math.PI,0.9*Math.PI);ctx.stroke();
+    // 볼터치
+    ctx.fillStyle='rgba(255,100,100,0.4)';
+    ctx.beginPath();ctx.ellipse(W*.35,H*.3,8,5,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(W*.65,H*.3,8,5,0,0,Math.PI*2);ctx.fill();
+  } else if(emotion==='sad'){
+    ctx.beginPath();ctx.arc(W*.5,H*.34,6,-0.8*Math.PI,-0.2*Math.PI,true);ctx.stroke();
+  } else if(emotion==='out'){
+    ctx.fillStyle='#5a2010';
+    ctx.beginPath();ctx.ellipse(W*.5,H*.32,5,7,0,0,Math.PI*2);ctx.fill();
+  } else {
+    ctx.beginPath();ctx.arc(W*.5,H*.3,5,0.05*Math.PI,0.95*Math.PI);ctx.stroke();
+  }
+
+  // 배구공 (중립 포즈)
+  if(emotion==='neutral'){
+    ctx.fillStyle='#fff8e8';
+    ctx.beginPath();ctx.arc(W*.9,H*.34,12,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#3a6abf';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.beginPath();ctx.arc(W*.9,H*.34,12,0,Math.PI*2);
+    ctx.strokeStyle='#1a4a9f';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(W*.9,H*.22);ctx.lineTo(W*.9,H*.46);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(W*.78,H*.34);ctx.lineTo(W*1.02,H*.34);ctx.stroke();
+    ctx.beginPath();ctx.arc(W*.9,H*.34,12,-0.6,0.6);ctx.strokeStyle='#3a6abf';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.beginPath();ctx.arc(W*.9,H*.34,12,Math.PI-0.6,Math.PI+0.6);ctx.stroke();
+  }
+}
+
+// ══════════════════════════
+//  유니콘 드로잉
+// ══════════════════════════
+function drawUnicorn(){
+  const cv=document.getElementById('unicorn-canvas');
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+
+  const grad=ctx.createLinearGradient(0,0,W,0);
+  ['#ff6b6b','#ffa94d','#ffe066','#69db7c','#4dabf7','#9775fa'].forEach((c,i,a)=>{
+    grad.addColorStop(i/(a.length-1),c);
+  });
+  ctx.globalAlpha=0.15;
+  for(let r=90;r>30;r-=15){ctx.strokeStyle=grad;ctx.lineWidth=12;ctx.beginPath();ctx.arc(W*.5,H*.95,r,Math.PI,0);ctx.stroke();}
+  ctx.globalAlpha=1;
+
+  ctx.fillStyle='#f8e8ff';ctx.strokeStyle='#c77dff';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.ellipse(W*.5,H*.68,W*.28,H*.2,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.strokeStyle='#c77dff';ctx.lineWidth=7;ctx.lineCap='round';
+  [[W*.36,H*.78,W*.3,H*.96],[W*.44,H*.8,W*.38,H*.97],[W*.56,H*.8,W*.62,H*.97],[W*.64,H*.78,W*.7,H*.96]].forEach(([x1,y1,x2,y2])=>{
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  });
+  const tg=ctx.createLinearGradient(W*.82,H*.55,W*.98,H*.78);
+  tg.addColorStop(0,'#ff6b9d');tg.addColorStop(.4,'#c77dff');tg.addColorStop(1,'#74c0fc');
+  ctx.strokeStyle=tg;ctx.lineWidth=9;
+  ctx.beginPath();ctx.moveTo(W*.78,H*.6);ctx.bezierCurveTo(W*.95,H*.5,W*1.0,H*.7,W*.88,H*.82);ctx.stroke();
+  ctx.fillStyle='#f8e8ff';ctx.strokeStyle='#c77dff';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(W*.38,H*.55);ctx.lineTo(W*.32,H*.32);ctx.lineTo(W*.48,H*.28);ctx.lineTo(W*.52,H*.52);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.ellipse(W*.38,H*.26,W*.14,W*.13,-.3,0,Math.PI*2);ctx.fill();ctx.stroke();
+  const hg=ctx.createLinearGradient(W*.3,H*.08,W*.38,H*.16);
+  hg.addColorStop(0,'#ffe066');hg.addColorStop(.5,'#ff9f43');hg.addColorStop(1,'#ee5a24');
+  ctx.fillStyle=hg;ctx.strokeStyle='#e17055';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(W*.28,H*.16);ctx.lineTo(W*.38,H*.05);ctx.lineTo(W*.44,H*.18);ctx.closePath();ctx.fill();ctx.stroke();
+  ['#ff6b9d','#ffa94d','#ffe066','#69db7c','#4dabf7','#9775fa'].forEach((c,i)=>{
+    ctx.strokeStyle=c;ctx.lineWidth=4+i*.5;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(W*.44,H*.15+i*3);ctx.bezierCurveTo(W*.52,H*.1+i*2,W*.56,H*.25+i*3,W*.48,H*.35+i*2);ctx.stroke();
+  });
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(W*.34,H*.24,5,4,-.2,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#7c3aed';ctx.beginPath();ctx.arc(W*.34,H*.245,3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(W*.345,H*.238,1.2,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(255,182,193,0.6)';ctx.beginPath();ctx.ellipse(W*.29,H*.28,6,4,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#c77dff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(W*.37,H*.3,5,.1*Math.PI,.9*Math.PI);ctx.stroke();
+}
+
+// ══════════════════════════
+//  SVG 그림
+// ══════════════════════════
+function svgVolleyBasic(svg,r_cm,F){
+  const px=55,py=80,tx=px+200;
+  svg.setAttribute('viewBox','0 0 340 160');
+  svg.innerHTML=`
+    <defs>
+      <marker id="af" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+        <polygon points="0,0 8,4 0,8" fill="#ff6b6b"/>
+      </marker>
+      <radialGradient id="ball" cx="40%" cy="35%">
+        <stop offset="0%" stop-color="#fff8e8"/>
+        <stop offset="100%" stop-color="#f0d890"/>
+      </radialGradient>
+    </defs>
+    <!-- 팔/막대 -->
+    <rect x="${px}" y="${py-7}" width="200" height="14" rx="5" fill="#d4956a" stroke="#b07040" stroke-width="1.5"/>
+    <!-- 어깨(회전축) -->
+    <circle cx="${px}" cy="${py}" r="11" fill="#e8c4a0" stroke="#b07040" stroke-width="2"/>
+    <circle cx="${px}" cy="${py}" r="4" fill="#b07040"/>
+    <text x="${px}" y="${py+26}" font-size="12" font-family="Nanum Gothic" font-weight="800" fill="#b07040" text-anchor="middle">O</text>
+    <!-- 배구공 -->
+    <circle cx="${tx}" cy="${py}" r="18" fill="url(#ball)" stroke="#3a6abf" stroke-width="2"/>
+    <path d="M${tx-18},${py} Q${tx},${py-22} ${tx+18},${py}" fill="none" stroke="#3a6abf" stroke-width="1.5"/>
+    <path d="M${tx-18},${py} Q${tx},${py+22} ${tx+18},${py}" fill="none" stroke="#3a6abf" stroke-width="1.5"/>
+    <line x1="${tx}" y1="${py-18}" x2="${tx}" y2="${py+18}" stroke="#3a6abf" stroke-width="1.5"/>
+    <!-- 치수선 -->
+    <line x1="${px}" y1="${py+44}" x2="${tx}" y2="${py+44}" stroke="#ff6b6b" stroke-width="1.2" stroke-dasharray="4,3"/>
+    <line x1="${px}" y1="${py+40}" x2="${px}" y2="${py+48}" stroke="#ff6b6b" stroke-width="1.5"/>
+    <line x1="${tx}" y1="${py+40}" x2="${tx}" y2="${py+48}" stroke="#ff6b6b" stroke-width="1.5"/>
+    <text x="${(px+tx)/2}" y="${py+60}" font-size="11" font-family="Nanum Gothic" font-weight="700" fill="#ff6b6b" text-anchor="middle">${r_cm} cm</text>
+    <!-- 힘 화살표 -->
+    <line x1="${tx}" y1="${py-40}" x2="${tx}" y2="${py-22}" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#af)"/>
+    <text x="${tx+6}" y="${py-36}" font-size="12" font-family="Nanum Gothic" font-weight="800" fill="#ff6b6b">F=${F}N</text>
+    <rect x="${tx+2}" y="${py-22}" width="7" height="7" fill="none" stroke="#ff6b6b" stroke-width="1.5"/>
+  `;
+}
+
+function svgVolleyAngle(svg,r_cm,F,th){
+  const px=55,py=88,tx=px+200;
+  const rad=th*Math.PI/180,fx=-Math.sin(rad)*50,fy=-Math.cos(rad)*50;
+  svg.setAttribute('viewBox','0 0 340 175');
+  svg.innerHTML=`
+    <defs>
+      <marker id="aa" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+        <polygon points="0,0 8,4 0,8" fill="#ff6b6b"/>
+      </marker>
+      <radialGradient id="ball2" cx="40%" cy="35%">
+        <stop offset="0%" stop-color="#fff8e8"/>
+        <stop offset="100%" stop-color="#f0d890"/>
+      </radialGradient>
+    </defs>
+    <rect x="${px}" y="${py-6}" width="200" height="13" rx="5" fill="#d4956a" stroke="#b07040" stroke-width="1.5"/>
+    <circle cx="${px}" cy="${py}" r="10" fill="#e8c4a0" stroke="#b07040" stroke-width="2"/>
+    <circle cx="${px}" cy="${py}" r="4" fill="#b07040"/>
+    <text x="${px}" y="${py+24}" font-size="11" font-family="Nanum Gothic" font-weight="800" fill="#b07040" text-anchor="middle">O</text>
+    <circle cx="${tx}" cy="${py}" r="17" fill="url(#ball2)" stroke="#3a6abf" stroke-width="2"/>
+    <path d="M${tx-17},${py} Q${tx},${py-20} ${tx+17},${py}" fill="none" stroke="#3a6abf" stroke-width="1.5"/>
+    <path d="M${tx-17},${py} Q${tx},${py+20} ${tx+17},${py}" fill="none" stroke="#3a6abf" stroke-width="1.5"/>
+    <line x1="${tx}" y1="${py-17}" x2="${tx}" y2="${py+17}" stroke="#3a6abf" stroke-width="1.5"/>
+    <line x1="${px}" y1="${py+42}" x2="${tx}" y2="${py+42}" stroke="#ff6b6b" stroke-width="1.1" stroke-dasharray="3,3"/>
+    <line x1="${px}" y1="${py+38}" x2="${px}" y2="${py+46}" stroke="#ff6b6b" stroke-width="1.5"/>
+    <line x1="${tx}" y1="${py+38}" x2="${tx}" y2="${py+46}" stroke="#ff6b6b" stroke-width="1.5"/>
+    <text x="${(px+tx)/2}" y="${py+58}" font-size="11" font-family="Nanum Gothic" font-weight="700" fill="#ff6b6b" text-anchor="middle">${r_cm} cm</text>
+    <line x1="${tx}" y1="${py}" x2="${tx+fx}" y2="${py+fy}" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#aa)"/>
+    <text x="${tx+fx+6}" y="${py+fy+4}" font-size="11" font-family="Nanum Gothic" font-weight="800" fill="#ff6b6b">F=${F}N</text>
+    <path d="M${tx+16},${py} A16,16 0 0,0 ${tx+16*Math.cos((90-th)*Math.PI/180)},${py-16*Math.sin((90-th)*Math.PI/180)}"
+      fill="none" stroke="#2c5f8a" stroke-width="1.8" stroke-dasharray="3,2"/>
+    <text x="${tx+20}" y="${py-10}" font-size="11" font-family="Nanum Gothic" font-weight="700" fill="#2c5f8a">${th}°</text>
+  `;
+}
+
+function svgMultiForce(svg,r1,r2,F1,F2){
+  const cx=170,cy=82,sc=140/Math.max(r1,r2);
+  const x1=cx-r1*sc,x2=cx+r2*sc;
+  svg.setAttribute('viewBox','0 0 340 148');
+  svg.innerHTML=`
+    <defs>
+      <marker id="am1" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+        <polygon points="0,0 7,3.5 0,7" fill="#27ae60"/>
+      </marker>
+      <marker id="am2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+        <polygon points="0,0 7,3.5 0,7" fill="#2c5f8a"/>
+      </marker>
+      <radialGradient id="b1" cx="40%" cy="35%"><stop offset="0%" stop-color="#fff8e8"/><stop offset="100%" stop-color="#f0d890"/></radialGradient>
+      <radialGradient id="b2" cx="40%" cy="35%"><stop offset="0%" stop-color="#ffe8f8"/><stop offset="100%" stop-color="#f0a0d0"/></radialGradient>
+    </defs>
+    <rect x="${x1-8}" y="${cy-7}" width="${x2-x1+16}" height="14" rx="4" fill="#d4956a" stroke="#b07040" stroke-width="1.5"/>
+    <circle cx="${cx}" cy="${cy}" r="9" fill="#e8c4a0" stroke="#b07040" stroke-width="2"/>
+    <text x="${cx}" y="${cy+22}" font-size="10" font-family="Nanum Gothic" font-weight="800" fill="#b07040" text-anchor="middle">O</text>
+    <circle cx="${x1}" cy="${cy}" r="13" fill="url(#b1)" stroke="#3a6abf" stroke-width="1.5"/>
+    <path d="M${x1-13},${cy} Q${x1},${cy-15} ${x1+13},${cy}" fill="none" stroke="#3a6abf" stroke-width="1"/>
+    <path d="M${x1-13},${cy} Q${x1},${cy+15} ${x1+13},${cy}" fill="none" stroke="#3a6abf" stroke-width="1"/>
+    <circle cx="${x2}" cy="${cy}" r="13" fill="url(#b2)" stroke="#9b27a0" stroke-width="1.5"/>
+    <path d="M${x2-13},${cy} Q${x2},${cy-15} ${x2+13},${cy}" fill="none" stroke="#9b27a0" stroke-width="1"/>
+    <path d="M${x2-13},${cy} Q${x2},${cy+15} ${x2+13},${cy}" fill="none" stroke="#9b27a0" stroke-width="1"/>
+    <line x1="${x1}" y1="${cy-25}" x2="${x1}" y2="${cy-16}" stroke="#27ae60" stroke-width="2.5" marker-end="url(#am1)"/>
+    <text x="${x1}" y="${cy-28}" font-size="11" font-family="Nanum Gothic" font-weight="800" fill="#27ae60" text-anchor="middle">F₁=${F1}N</text>
+    <line x1="${x2}" y1="${cy-25}" x2="${x2}" y2="${cy-16}" stroke="#2c5f8a" stroke-width="2.5" marker-end="url(#am2)"/>
+    <text x="${x2}" y="${cy-28}" font-size="11" font-family="Nanum Gothic" font-weight="800" fill="#2c5f8a" text-anchor="middle">F₂=${F2}N</text>
+    <line x1="${x1}" y1="${cy+28}" x2="${cx}" y2="${cy+28}" stroke="#27ae60" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="${(x1+cx)/2}" y="${cy+42}" font-size="10" font-family="Nanum Gothic" font-weight="700" fill="#27ae60" text-anchor="middle">r₁=${r1}cm</text>
+    <line x1="${cx}" y1="${cy+28}" x2="${x2}" y2="${cy+28}" stroke="#2c5f8a" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="${(cx+x2)/2}" y="${cy+42}" font-size="10" font-family="Nanum Gothic" font-weight="700" fill="#2c5f8a" text-anchor="middle">r₂=${r2}cm</text>
+  `;
+}
+
+// ══════════════════════════
+//  문제 생성
+// ══════════════════════════
+const BASIC_CTX=[
+  (r,F)=>`해변 배구 경기 중이라예! 선수가 어깨 관절(O)을 회전축으로 삼아 팔 끝까지의 거리가 <strong>${r} cm</strong>인 팔을 뻗고, 배구공에 수직으로 <strong>${F} N</strong>의 힘을 가했다 아이가. 이때 어깨 관절에 작용하는 돌림힘은 얼마꼬?`,
+  (r,F)=>`서브를 완벽하게 넣으려면 정확한 돌림힘이 필요하다 아이가! 팔 길이(회전축~공)가 <strong>${r} cm</strong>이고, 팔에 수직으로 <strong>${F} N</strong>의 힘을 줬을 때, 어깨에 걸리는 돌림힘을 구해봐라예~`,
+  (r,F)=>`Marco 코치가 말하노라. 완벽한 토스를 위해 팔 끝까지 <strong>${r} cm</strong> 뻗고 배구공에 수직으로 <strong>${F} N</strong>의 힘을 가했다 카이. 이 순간 어깨 관절의 돌림힘은 몇 N·m이 되겠노?`,
+];
+const ANGLE_CTX=[
+  (r,F,th)=>`스파이크 각도가 중요하다 아이가! 팔 길이 <strong>${r} cm</strong>에 팔과 <strong>${th}°</strong>를 이루며 <strong>${F} N</strong>의 힘을 가했다카이. 어깨 관절에 작용하는 돌림힘은 얼마꼬?`,
+  (r,F,th)=>`서브 동작에서 팔(길이 <strong>${r} cm</strong>)과 <strong>${th}°</strong> 각도로 <strong>${F} N</strong>의 힘을 줬다 아이가. 이때 어깨 관절의 돌림힘 크기를 구해봐라예~`,
+];
+const MULTI_CTX=[
+  (r1,r2,F1,F2,dir)=>`두 선수가 막대 양쪽에서 동시에 스파이크를 연습하는데, 회전축 O에서 왼쪽 <strong>${r1} cm</strong>에 배구공 A(<strong>${F1} N</strong>), 오른쪽 <strong>${r2} cm</strong>에 배구공 B(<strong>${F2} N</strong>)가 수직으로 작용하고 있다 아이가. 두 힘이 <strong>${dir}</strong>으로 회전시킬 때 합성 돌림힘은 얼마꼬?`,
+  (r1,r2,F1,F2,dir)=>`팀 연습 중! O점에서 ${r1} cm, ${r2} cm 떨어진 곳에 각각 <strong>${F1} N</strong>, <strong>${F2} N</strong>의 힘이 수직으로 작용한다 카이. 두 힘이 <strong>${dir}</strong>이면 합성 돌림힘은?`,
+];
+
+function genBasic(){
+  const r=pick([15,20,25,30,40,50]),F=pick([5,8,10,12,15,20]);
+  const ans=r2(r/100*F);
+  return {
+    type:'basic',badge:'🏐 기본형',
+    qtext:pick(BASIC_CTX)(r,F),
+    cond:`• 팔 길이(r): <span class="val">${r} cm = ${r/100} m</span>\n• 힘(F): <span class="val">${F} N</span>\n• 힘 방향: 팔에 수직 (θ = 90°)`,
+    correctAns:ans,unit:'N·m',
+    svgfn:svg=>svgVolleyBasic(svg,r,F),
+    hint:`τ = rFsinθ\nθ = 90° → sinθ = 1\nτ = ${r/100} × ${F} × 1`,
+    hintFormula:`τ = ${r/100} × ${F} = ${ans} N·m`,
+    fillRows:[
+      {tmpl:['공식:','τ = r × F × sin','__θ__',''],blanks:[{k:'θ',v:'θ'}]},
+      {tmpl:['대입:',`τ = __r__ × ${F} × sin90°`],blanks:[{k:'r',v:`${r/100}`}]},
+      {tmpl:['sin90° =','__s__'],blanks:[{k:'s',v:'1'}]},
+      {tmpl:['정답:','τ = __a__ N·m'],blanks:[{k:'a',v:`${ans}`}]},
+    ],
+    decoys:[`${r2(r/100*F*2)}`,`${r2(r/100*F*0.5)}`,`${r*F}`,`sin90°`],
+    why:`힘이 팔에 수직(θ=90°)이므로 sinθ=1, 힘 전체가 회전에 기여합니다!`
+  };
+}
+function genAngle(){
+  const sinMap={30:'1/2',45:'√2/2',60:'√3/2'};
+  const sinVal={30:.5,45:Math.SQRT2/2,60:Math.sqrt(3)/2};
+  const r_cm=pick([20,25,30,40]),F=pick([10,12,15,20]),th=pick([30,45,60]);
+  const r=r_cm/100,sv=sinVal[th],sm=sinMap[th];
+  const ans=r2(r*F*sv);
+  return {
+    type:'angle',badge:'📐 각도형',
+    qtext:pick(ANGLE_CTX)(r_cm,F,th),
+    cond:`• 팔 길이(r): <span class="val">${r_cm} cm = ${r} m</span>\n• 힘(F): <span class="val">${F} N</span>\n• 각도: <span class="val">θ = ${th}°</span>\n• sin${th}° = <span class="val">${sm}</span>`,
+    correctAns:ans,unit:'N·m',
+    svgfn:svg=>svgVolleyAngle(svg,r_cm,F,th),
+    hint:`τ = rFsinθ\nsin${th}° = ${sm}\nτ = ${r} × ${F} × ${sm}`,
+    hintFormula:`τ = ${r} × ${F} × ${sm} = ${ans} N·m`,
+    fillRows:[
+      {tmpl:['수직 성분:','F·sin','__θ__','=','F·'+sm],blanks:[{k:'θ',v:`${th}°`}]},
+      {tmpl:['대입:',`τ = __r__ × ${F} × sin${th}°`],blanks:[{k:'r',v:`${r}`}]},
+      {tmpl:['계산:',`τ = ${r} × ${F} × __s__`],blanks:[{k:'s',v:sm}]},
+      {tmpl:['정답:','τ = __a__ N·m'],blanks:[{k:'a',v:`${ans}`}]},
+    ],
+    decoys:[`${r2(r*F)}`,`${r2(r*F*2)}`,`cos${th}°`,`${r2(r*F*.25)}`],
+    why:`힘이 기울어져 있으면 수직 성분 F·sinθ만 회전에 기여해요!`
+  };
+}
+function genMulti(){
+  const r1=pick([10,15,20,25]),r2c=pick([20,30,40,50]);
+  const F1=pick([5,8,10,12]),F2=pick([5,8,10,12]);
+  const t1=r2(r1/100*F1),t2=r2(r2c/100*F2);
+  const same=Math.random()>.5;
+  const tot=same?r2(t1+t2):r2(Math.abs(t1-t2));
+  const dirKo=same?'같은 방향':'반대 방향';
+  return {
+    type:'multi',badge:'⚖️ 두 힘',
+    qtext:pick(MULTI_CTX)(r1,r2c,F1,F2,dirKo),
+    cond:`• F₁: r₁=<span class="val">${r1} cm</span>, F₁=<span class="val">${F1} N</span>\n• F₂: r₂=<span class="val">${r2c} cm</span>, F₂=<span class="val">${F2} N</span>\n• 방향: <span class="val">${dirKo}</span>`,
+    correctAns:tot,unit:'N·m',
+    svgfn:svg=>svgMultiForce(svg,r1,r2c,F1,F2),
+    hint:`τ₁=r₁F₁=${r1/100}×${F1}=${t1} N·m\nτ₂=r₂F₂=${r2c/100}×${F2}=${t2} N·m\n${same?'같은 방향→합산':'반대 방향→차이'}`,
+    hintFormula:`τ합=${same?`${t1}+${t2}`:`|${t1}−${t2}|`}=${tot} N·m`,
+    fillRows:[
+      {tmpl:['τ₁:',`τ₁ = ${r1/100} × __F1__`],blanks:[{k:'F1',v:`${F1}`}]},
+      {tmpl:['τ₂:',`τ₂ = ${r2c/100} × __F2__`],blanks:[{k:'F2',v:`${F2}`}]},
+      {tmpl:[`${dirKo}→`,'__op__'],blanks:[{k:'op',v:same?'τ₁+τ₂':'|τ₁−τ₂|'}]},
+      {tmpl:['정답:','τ합 = __a__ N·m'],blanks:[{k:'a',v:`${tot}`}]},
+    ],
+    decoys:[`${r2(t1+t2+.5)}`,`${r2(Math.abs(t1-t2)+.3)}`,'τ₁×τ₂','τ₁÷τ₂'],
+    why:`각 토크를 따로 구한 뒤 방향에 따라 더하거나 빼요!`
+  };
+}
+
+function makeOpts(correct){
+  const s=new Set([correct]);
+  [.5,2,.25,4,1.5,3].forEach(m=>{if(s.size<4){const v=r2(correct*m);if(v>0&&v!==correct)s.add(v);}});
+  while(s.size<4){const v=r2(correct*(.4+Math.random()*1.2));if(v>0&&v!==correct)s.add(v);}
+  return shuffle([...s]).slice(0,4);
+}
+
+// ══════════════════════════
+//  문제 렌더링
+// ══════════════════════════
+const MARCO_MSGS=[
+  '자자~ 집중해라, 친구야! 이 문제 맞추면 진짜 잘하는 기다! 🏐',
+  '해변에서 배구도 하고 물리도 배우고~ 일석이조 아이가! 💪',
+  'τ = rFsinθ 이거 하나만 기억하면 된다카이! 파이팅! 🌊',
+  '이 문제 풀면 Marco가 스파이크 비법 알려준다 아이가! 😎',
+  '바다 냄새 맡으면서 공부하이소~ 머리가 잘 돌아간다 아이가! 🌴',
+];
+
+function setType(el,type){
+  selectedType=type;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');nextQ();
+}
+
+function nextQ(){
+  closeSolModal();
+  answered=false;
+  document.getElementById('btn-sol').disabled=true;
+  document.getElementById('hint-body').classList.remove('open');
+  qCount++;
+  let q;
+  if(selectedType==='basic') q=genBasic();
+  else if(selectedType==='angle') q=genAngle();
+  else if(selectedType==='multi') q=genMulti();
+  else{const r=Math.random();q=r<.35?genBasic():r<.65?genAngle():genMulti();}
+  currentQ=q;
+
+  document.getElementById('qbadge').textContent=q.badge;
+  document.getElementById('qtext').innerHTML=q.qtext;
+  document.getElementById('qcond').innerHTML=q.cond.replace(/\n/g,'<br>');
+  q.svgfn(document.getElementById('qsvg'));
+  const hb=document.getElementById('hint-body');
+  hb.innerHTML=q.hint.replace(/\n/g,'<br>')+`<span class="hint-formula">${q.hintFormula}</span>`;
+
+  const opts=makeOpts(q.correctAns);
+  const lbls=['①','②','③','④'];
+  const el=document.getElementById('opts');el.innerHTML='';
+  opts.forEach((v,i)=>{
+    const b=document.createElement('button');b.className='opt';
+    b.innerHTML=`<span class="lbl">${lbls[i]}</span><span>${v} ${q.unit}</span>`;
+    b.onclick=()=>selectOpt(b,v);
+    el.appendChild(b);
+  });
+
+  document.getElementById('bubble-msg').textContent=pick(MARCO_MSGS);
+  drawMarco('neutral');
+  updateHUD();
+}
+
+function selectOpt(btn,val){
+  if(answered) return;
+  answered=true;
+  const ok=(val===currentQ.correctAns);
+  document.querySelectorAll('.opt').forEach(b=>{
+    b.disabled=true;
+    const bv=parseFloat(b.querySelector('span:last-child').textContent);
+    if(bv===currentQ.correctAns) b.classList.add('correct');
+  });
+  if(ok){
+    btn.classList.add('correct');
+    okCount++; combo++;
+    // XP
+    const xpGain=combo>=3?3:combo>=2?2:1;
+    xp+=xpGain;
+    const prevLv=lv;
+    if(xp>=XP_PER_LEVEL){xp-=XP_PER_LEVEL;lv++;}
+    // 플로팅 텍스트
+    spawnFloat(`+${xpGain} XP ✨`,btn,'#2c7adb');
+    if(combo>=2){
+      spawnFloat(`🔥 ${combo}콤보!`,btn,'#ff9500');
+      document.getElementById('combo-bar').classList.add('show');
+      document.getElementById('combo-text').textContent=`${combo}콤보! 엄청난 집중력이다 아이가!`;
+    }
+    if(lv>prevLv) showLevelUp();
+    drawMarco('celebrate');
+    document.getElementById('bubble-msg').textContent=pick([
+      '오오~ 마이 잘하네! 역시 내 제자다 아이가! 🎉',
+      '정답이다 카이! 이런 실력이면 국가대표도 되겠네! 💪',
+      '완벽해라! τ = rFsinθ 완전 마스터 아이가! 🏐',
+      '야야~ 대단하다! 스파이크 비법 알려줄게! 😎',
+    ]);
+    setTimeout(()=>openUnicorn(),400);
+  } else {
+    btn.classList.add('wrong');
+    combo=0;
+    document.getElementById('combo-bar').classList.remove('show');
+    hp=Math.max(0,hp-1);
+    spawnFloat('💔 -1 HP',btn,'#ff4444');
+    document.getElementById('qcard').classList.add('shake');
+    setTimeout(()=>document.getElementById('qcard').classList.remove('shake'),400);
+    if(hp<=0){
+      drawMarco('out');
+      document.getElementById('bubble-msg').textContent='으악, 아웃이다! 체력이 다 떨어졌어... 😵';
+      setTimeout(()=>showOutDance(),500);
+    } else {
+      drawMarco('sad');
+      document.getElementById('bubble-msg').textContent=pick([
+        '아이고~ 틀렸네! 괜찮다, 같이 다시 풀어보자꼬! 💦',
+        '아야~ 惜しい! 공식 다시 한 번 보자카이! τ = rFsinθ',
+        '틀렸다고 기죽으면 안 된다 아이가! 풀이 보고 다시 하자꼬! 🌊',
+      ]);
+      setTimeout(()=>openSolModal(),500);
+    }
+  }
+  document.getElementById('btn-sol').disabled=false;
+  updateHUD();
+}
+
+function toggleHint(){document.getElementById('hint-body').classList.toggle('open');}
+function updateHUD(){
+  document.getElementById('st-lv').textContent=lv;
+  document.getElementById('st-ok').textContent=okCount;
+  document.getElementById('st-combo').textContent=combo;
+  document.getElementById('hp-fill').style.width=(hp/MAX_HP*100)+'%';
+  document.getElementById('hp-text').textContent=`${hp}/${MAX_HP}`;
+  document.getElementById('xp-fill').style.width=(xp/XP_PER_LEVEL*100)+'%';
+  document.getElementById('xp-text').textContent=`${xp}/${XP_PER_LEVEL}`;
+}
+
+function spawnFloat(text,refEl,color){
+  const el=document.createElement('div');el.className='float-text';
+  el.textContent=text;el.style.color=color;
+  const rect=refEl.getBoundingClientRect();
+  el.style.left=rect.left+rect.width/2+'px';
+  el.style.top=rect.top+'px';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1200);
+}
+
+function showLevelUp(){
+  const b=document.getElementById('levelup-banner');
+  b.textContent=`⚡ LEVEL ${lv} UP! 아이고 대단하다! ⚡`;
+  b.classList.add('show');
+  setTimeout(()=>b.classList.remove('show'),2500);
+}
+
+// ══════════════════════════
+//  유니콘
+// ══════════════════════════
+const UNICORN_MSGS=[
+  '정답이에요!\n물리학의 신이시여,\n당신은 진정한 천재입니다. 🦄',
+  '와우! 완벽한 풀이!\n저도 τ = rFsinθ\n이제 이해했어요! 🌈',
+  '정답이에요!\n해변 배구 + 물리 = 최강 콤보!\n당신이 최고예요! ✨',
+  '훌륭합니다!\nMarco 코치도 인정하는 실력!\n계속 달려봐요! 🏐',
+];
+function openUnicorn(){
+  document.getElementById('unicorn-bubble').innerHTML=pick(UNICORN_MSGS).replace(/\n/g,'<br>');
+  drawUnicorn();
+  spawnSparkles();
+  document.getElementById('unicorn-overlay').classList.add('open');
+}
+function closeUnicorn(){
+  document.getElementById('unicorn-overlay').classList.remove('open');
+  setTimeout(()=>nextQ(),300);
+}
+function spawnSparkles(){
+  const em=['✨','🌟','💫','🌈','⭐','🦄','💜','🎉','🏐','🌊'];
+  for(let i=0;i<14;i++){
+    setTimeout(()=>{
+      const s=document.createElement('div');s.className='sparkle';
+      s.textContent=pick(em);
+      s.style.left=Math.random()*window.innerWidth+'px';
+      s.style.top=Math.random()*window.innerHeight*.5+'px';
+      s.style.animationDelay=Math.random()*.4+'s';
+      document.body.appendChild(s);
+      setTimeout(()=>s.remove(),1500);
+    },i*80);
+  }
+}
+
+// ══════════════════════════
+//  아웃 (게임오버)
+// ══════════════════════════
+function showOutDance(){
+  drawMarco('out','out-canvas');
+  document.getElementById('out-overlay').classList.add('open');
+}
+function closeOut(){
+  document.getElementById('out-overlay').classList.remove('open');
+  hp=MAX_HP; xp=0; lv=1; combo=0; okCount=0;
+  document.getElementById('combo-bar').classList.remove('show');
+  document.getElementById('bubble-msg').textContent='다시 힘내서 도전해보자꼬! 할 수 있다, 친구야! 💪';
+  drawMarco('neutral');
+  updateHUD();
+  nextQ();
+}
+
+// ══════════════════════════
+//  풀이 모달 (공 던지기 게임)
+// ══════════════════════════
+function openSolModal(){
+  document.getElementById('sol-overlay').classList.add('open');
+  document.getElementById('sol-explain').classList.remove('show');
+  document.getElementById('throw-area').style.display='';
+  document.getElementById('throw-msg').style.display='';
+  document.getElementById('close-sol-btn').style.display='none';
+  buildSolIntro();
+  setupThrowGame();
+}
+function closeSolModal(){document.getElementById('sol-overlay').classList.remove('open');}
+
+function buildSolIntro(){
+  const q=currentQ;
+  document.getElementById('sol-intro').innerHTML=
+    `<b>아이고~ 틀렸네! 이번엔 공을 던져서 정답을 맞혀보자꼬!</b><br><br>`+
+    `<span style="color:#c0392b">💡 핵심 개념:</span> ${q.why}<br>`+
+    `<span style="color:#2c5f8a">공식: <b>τ = r × F × sinθ</b></span>`;
+}
+
+const THROW_LAYOUTS=[
+  [{top:14,left:16},{top:8,left:64},{top:42,left:38}],
+  [{top:12,left:10},{top:6,left:46},{top:16,left:80},{top:42,left:60}],
+  [{top:10,left:8},{top:6,left:36},{top:14,left:66},{top:44,left:84},{top:40,left:28}],
+];
+
+function setupThrowGame(){
+  const q=currentQ;
+  const opts=shuffle(makeOpts(q.correctAns));
+  const layout=THROW_LAYOUTS[opts.length-3]||THROW_LAYOUTS[1];
+  const area=document.getElementById('throw-area');
+  area.querySelectorAll('.throw-target').forEach(t=>t.remove());
+  const ball=document.getElementById('throw-ball');
+  throwTargets=opts.map((v,i)=>{
+    const pos=layout[i];
+    const el=document.createElement('div');
+    el.className='throw-target';
+    el.style.top=pos.top+'%';el.style.left=pos.left+'%';
+    el.innerHTML=`<span class="tv">${v}</span><span class="tu">${q.unit}</span>`;
+    area.insertBefore(el,ball);
+    return {el,val:v};
+  });
+  const msg=document.getElementById('throw-msg');
+  msg.className='throw-msg';
+  msg.textContent='공을 잡고 원하는 표적 쪽으로 드래그했다 놓아봐라!';
+  resetBall();
+}
+
+function getBallHome(){
+  const area=document.getElementById('throw-area');
+  return {x:area.clientWidth/2,y:area.clientHeight-30};
+}
+
+function resetBall(){
+  const ball=document.getElementById('throw-ball');
+  ball.style.transition='';
+  const home=getBallHome();
+  ball.style.left=home.x+'px';
+  ball.style.top=home.y+'px';
+  ball.classList.remove('dragging');
+  document.getElementById('aim-line').style.display='none';
+}
+
+function initThrowBall(){
+  const ball=document.getElementById('throw-ball');
+  ball.addEventListener('pointerdown',ballPointerDown);
+}
+function ballPointerDown(e){
+  const ball=e.currentTarget;
+  if(dragging)return;
+  dragging=true;
+  try{ball.setPointerCapture(e.pointerId);}catch(err){}
+  ball.classList.add('dragging');
+  document.addEventListener('pointermove',ballPointerMove);
+  document.addEventListener('pointerup',ballPointerUp);
+}
+function ballPointerMove(e){
+  if(!dragging)return;
+  const area=document.getElementById('throw-area');
+  const rect=area.getBoundingClientRect();
+  const ball=document.getElementById('throw-ball');
+  let x=e.clientX-rect.left, y=e.clientY-rect.top;
+  x=Math.max(15,Math.min(rect.width-15,x));
+  y=Math.max(15,Math.min(rect.height-15,y));
+  ball.style.left=x+'px';ball.style.top=y+'px';
+  drawAimLine(getBallHome(),{x,y});
+}
+function drawAimLine(from,to){
+  const line=document.getElementById('aim-line');
+  const dx=to.x-from.x, dy=to.y-from.y;
+  const len=Math.hypot(dx,dy);
+  const ang=Math.atan2(dy,dx)*180/Math.PI;
+  line.style.display=len>10?'block':'none';
+  line.style.width=len+'px';
+  line.style.left=from.x+'px';
+  line.style.top=from.y+'px';
+  line.style.transform=`rotate(${ang}deg)`;
+}
+function ballPointerUp(e){
+  dragging=false;
+  document.removeEventListener('pointermove',ballPointerMove);
+  document.removeEventListener('pointerup',ballPointerUp);
+  const ball=document.getElementById('throw-ball');
+  ball.classList.remove('dragging');
+  document.getElementById('aim-line').style.display='none';
+  const home=getBallHome();
+  const curLeft=parseFloat(ball.style.left)||home.x;
+  const curTop=parseFloat(ball.style.top)||home.y;
+  const dx=curLeft-home.x, dy=curTop-home.y;
+  const dist=Math.hypot(dx,dy);
+  if(dist<25){resetBall();return;}
+  throwBall(home,{x:dx,y:dy});
+}
+
+function throwBall(home,dirVec){
+  const area=document.getElementById('throw-area');
+  const rect=area.getBoundingClientRect();
+  const throwAngle=Math.atan2(dirVec.y,dirVec.x);
+  let bestTarget=null,bestDiff=Infinity;
+  throwTargets.forEach(t=>{
+    const tr=t.el.getBoundingClientRect();
+    const tx=tr.left-rect.left+tr.width/2, ty=tr.top-rect.top+tr.height/2;
+    const ang=Math.atan2(ty-home.y,tx-home.x);
+    let diff=Math.abs(ang-throwAngle);
+    if(diff>Math.PI)diff=2*Math.PI-diff;
+    if(diff<bestDiff){bestDiff=diff;bestTarget=t;}
+  });
+  const HIT_TOLERANCE=0.5;
+  const ball=document.getElementById('throw-ball');
+  ball.style.transition='left 0.42s cubic-bezier(.2,.6,.3,1), top 0.42s cubic-bezier(.2,.6,.3,1)';
+  let destX,destY,hitTarget=null;
+  if(bestTarget && bestDiff<HIT_TOLERANCE){
+    hitTarget=bestTarget;
+    const tr=hitTarget.el.getBoundingClientRect();
+    destX=tr.left-rect.left+tr.width/2;
+    destY=tr.top-rect.top+tr.height/2;
+  } else {
+    destX=home.x+dirVec.x*3;
+    destY=home.y+dirVec.y*3;
+  }
+  ball.style.left=destX+'px';
+  ball.style.top=destY+'px';
+  setTimeout(()=>onBallArrive(hitTarget),430);
+}
+
+function onBallArrive(hitTarget){
+  const msg=document.getElementById('throw-msg');
+  if(!hitTarget){
+    msg.className='throw-msg ng';
+    msg.textContent='아이고 빗나갔다! 표적을 잘 조준해서 다시 던져봐라~';
+    setTimeout(()=>resetBall(),450);
+    return;
+  }
+  const q=currentQ;
+  if(hitTarget.val===q.correctAns){
+    hitTarget.el.classList.add('hit-correct');
+    msg.className='throw-msg ok';
+    msg.textContent='명중이다! 정답을 맞혔다 아이가! 🎯';
+    setTimeout(()=>showExplanation(),600);
+  } else {
+    hitTarget.el.classList.add('hit-wrong');
+    setTimeout(()=>hitTarget.el.classList.remove('hit-wrong'),400);
+    msg.className='throw-msg ng';
+    msg.textContent='이 표적은 정답이 아니다! 다시 던져봐라~';
+    setTimeout(()=>resetBall(),450);
+  }
+}
+
+function showExplanation(){
+  const q=currentQ;
+  document.getElementById('throw-area').style.display='none';
+  document.getElementById('throw-msg').style.display='none';
+  document.getElementById('sol-explain').classList.add('show');
+  document.getElementById('exp-box').innerHTML=
+    `${q.hint.replace(/\n/g,'<br>')}<span class="exp-formula">${q.hintFormula}</span>`;
+  document.getElementById('close-sol-btn').style.display='block';
+}
+initThrowBall();
+
+// 초기 실행
+drawMarco('neutral');
+nextQ();
+</script>
 </body>
 </html>
